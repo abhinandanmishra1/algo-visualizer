@@ -4,6 +4,9 @@ import { binarySearchConfig } from './binary-search';
 import { twoPointerConfig } from './two-pointer';
 import { reverseLinkedListConfig } from './reverse-linked-list';
 import { mergeTwoSortedListsConfig } from './merge-two-sorted-lists';
+import { bubbleSortConfig } from './bubble-sort';
+import { selectionSortConfig } from './selection-sort';
+import { insertionSortConfig } from './insertion-sort';
 import { AlgoRenderer } from '../renderers/types';
 import { LinkedListRenderer } from '../renderers/linkedListRenderer';
 import { ArrayRenderer } from '../renderers/arrayRenderer';
@@ -14,6 +17,9 @@ const algorithmRegistry: Record<string, AlgoConfig> = {
   'two-pointer': twoPointerConfig,
   'reverse-linked-list': reverseLinkedListConfig,
   'merge-two-sorted-lists': mergeTwoSortedListsConfig,
+  'bubble-sort': bubbleSortConfig,
+  'selection-sort': selectionSortConfig,
+  'insertion-sort': insertionSortConfig,
 };
 
 const rendererRegistry: Record<RendererType, AlgoRenderer> = {

@@ -42,13 +42,37 @@ describe('Algorithm Registry', () => {
     expect(algo!.renderer).toBe('array');
   });
 
+  it('loads Bubble Sort config', () => {
+    const algo = getAlgorithm('bubble-sort');
+    expect(algo).toBeDefined();
+    expect(validateAlgoConfig(algo!).valid).toBe(true);
+    expect(algo!.renderer).toBe('array');
+  });
+
+  it('loads Selection Sort config', () => {
+    const algo = getAlgorithm('selection-sort');
+    expect(algo).toBeDefined();
+    expect(validateAlgoConfig(algo!).valid).toBe(true);
+    expect(algo!.renderer).toBe('array');
+  });
+
+  it('loads Insertion Sort config', () => {
+    const algo = getAlgorithm('insertion-sort');
+    expect(algo).toBeDefined();
+    expect(validateAlgoConfig(algo!).valid).toBe(true);
+    expect(algo!.renderer).toBe('array');
+  });
+
   it('lists all registered algorithms', () => {
     const all = getAllAlgorithms();
-    expect(all.length).toBeGreaterThanOrEqual(5);
+    expect(all.length).toBeGreaterThanOrEqual(8);
     expect(all.map((a) => a.id)).toContain('floyd-cycle');
     expect(all.map((a) => a.id)).toContain('binary-search');
     expect(all.map((a) => a.id)).toContain('two-pointer');
     expect(all.map((a) => a.id)).toContain('reverse-linked-list');
     expect(all.map((a) => a.id)).toContain('merge-two-sorted-lists');
+    expect(all.map((a) => a.id)).toContain('bubble-sort');
+    expect(all.map((a) => a.id)).toContain('selection-sort');
+    expect(all.map((a) => a.id)).toContain('insertion-sort');
   });
 });
