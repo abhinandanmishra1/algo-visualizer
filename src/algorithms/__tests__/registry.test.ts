@@ -63,9 +63,37 @@ describe('Algorithm Registry', () => {
     expect(algo!.renderer).toBe('array');
   });
 
+  it('loads Linear Search config', () => {
+    const algo = getAlgorithm('linear-search');
+    expect(algo).toBeDefined();
+    expect(validateAlgoConfig(algo!).valid).toBe(true);
+    expect(algo!.renderer).toBe('array');
+  });
+
+  it('loads Sliding Window config', () => {
+    const algo = getAlgorithm('sliding-window');
+    expect(algo).toBeDefined();
+    expect(validateAlgoConfig(algo!).valid).toBe(true);
+    expect(algo!.renderer).toBe('array');
+  });
+
+  it('loads DFS config', () => {
+    const algo = getAlgorithm('dfs');
+    expect(algo).toBeDefined();
+    expect(validateAlgoConfig(algo!).valid).toBe(true);
+    expect(algo!.renderer).toBe('linked-list');
+  });
+
+  it('loads BFS config', () => {
+    const algo = getAlgorithm('bfs');
+    expect(algo).toBeDefined();
+    expect(validateAlgoConfig(algo!).valid).toBe(true);
+    expect(algo!.renderer).toBe('linked-list');
+  });
+
   it('lists all registered algorithms', () => {
     const all = getAllAlgorithms();
-    expect(all.length).toBeGreaterThanOrEqual(8);
+    expect(all.length).toBeGreaterThanOrEqual(12);
     expect(all.map((a) => a.id)).toContain('floyd-cycle');
     expect(all.map((a) => a.id)).toContain('binary-search');
     expect(all.map((a) => a.id)).toContain('two-pointer');
@@ -74,5 +102,9 @@ describe('Algorithm Registry', () => {
     expect(all.map((a) => a.id)).toContain('bubble-sort');
     expect(all.map((a) => a.id)).toContain('selection-sort');
     expect(all.map((a) => a.id)).toContain('insertion-sort');
+    expect(all.map((a) => a.id)).toContain('linear-search');
+    expect(all.map((a) => a.id)).toContain('sliding-window');
+    expect(all.map((a) => a.id)).toContain('dfs');
+    expect(all.map((a) => a.id)).toContain('bfs');
   });
 });

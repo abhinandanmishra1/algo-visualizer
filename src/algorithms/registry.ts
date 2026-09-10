@@ -7,6 +7,10 @@ import { mergeTwoSortedListsConfig } from './merge-two-sorted-lists';
 import { bubbleSortConfig } from './bubble-sort';
 import { selectionSortConfig } from './selection-sort';
 import { insertionSortConfig } from './insertion-sort';
+import { linearSearchConfig } from './linear-search';
+import { slidingWindowConfig } from './sliding-window';
+import { dfsConfig } from './dfs';
+import { bfsConfig } from './bfs';
 import { AlgoRenderer } from '../renderers/types';
 import { LinkedListRenderer } from '../renderers/linkedListRenderer';
 import { ArrayRenderer } from '../renderers/arrayRenderer';
@@ -20,6 +24,10 @@ const algorithmRegistry: Record<string, AlgoConfig> = {
   'bubble-sort': bubbleSortConfig,
   'selection-sort': selectionSortConfig,
   'insertion-sort': insertionSortConfig,
+  'linear-search': linearSearchConfig,
+  'sliding-window': slidingWindowConfig,
+  dfs: dfsConfig,
+  bfs: bfsConfig,
 };
 
 const rendererRegistry: Record<RendererType, AlgoRenderer> = {
