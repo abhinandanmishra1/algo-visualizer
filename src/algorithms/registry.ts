@@ -14,6 +14,7 @@ import { bfsConfig } from './bfs';
 import { AlgoRenderer } from '../renderers/types';
 import { LinkedListRenderer } from '../renderers/linkedListRenderer';
 import { ArrayRenderer } from '../renderers/arrayRenderer';
+import { GraphRenderer } from '../renderers/graphRenderer';
 
 const algorithmRegistry: Record<string, AlgoConfig> = {
   'floyd-cycle': floydCycleConfig,
@@ -34,7 +35,7 @@ const rendererRegistry: Record<RendererType, AlgoRenderer> = {
   'linked-list': new LinkedListRenderer(),
   array: new ArrayRenderer(),
   tree: new ArrayRenderer(), // fallback
-  graph: new LinkedListRenderer(), // fallback
+  graph: new GraphRenderer(),
   'component-diagram': new LinkedListRenderer(), // fallback
 };
 

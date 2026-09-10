@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Download, Film, CheckCircle2, Loader2, X } from 'lucide-react';
 import { PlaybackEngine } from '../engine/engine';
-import { recordCanvasAnimation } from './canvasRecorder';
+import { createAudioSfxManager } from './audioSfx';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -37,16 +37,85 @@ export const ExportModal: React.FC<ExportModalProps> = ({
     const filename = `${safeTitle}-${aspectRatio === '9:16' ? 'reel' : 'widescreen'}.webm`;
 
     try {
-      await recordCanvasAnimation(canvasRef.current, engine, {
-        fps: 30,
-        stepDurationMs: 1400,
-        filename,
-        onProgress: (current, total, percent) => {
-          setStepCount({ current, total });
-          setProgress(percent);
-        },
+      // Create audio SFX manager for synchronized sound effects
+      const audioMgr = createAudioSfxManager();
+
+      // Get supported mime type and prepare recording
+      const canvas = canvasRef.current;
+      const videoStream = canvas.captureStream(30);
+      const audioStream = audioMgr.getAudioStream();
+
+      // Composite video and audio tracks into single MediaStream
+      const combinedStream = new MediaStream([
+        ...videoStream.getTracks(),
+        ...audioStream.getAudioTracks(),
+      ]);
+
+      // Record combined stream (video + audio)
+      const mimeType = 'video/webm;codecs=vp9,opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        throw new Error(`Unsupported mime type: ${mimeType}`);
+      }
+
+      const mediaRecorder = new MediaRecorder(combinedStream, {
+        mimeType,
+        videoBitsPerSecond: 6000000,
       });
-      setIsFinished(true);
+
+      const chunks: Blob[] = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          chunks.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const fullBlob = new Blob(chunks, { type: mimeType });
+        const url = URL.createObjectURL(fullBlob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+      };
+
+      // Reset engine and start recording
+      engine.reset();
+      mediaRecorder.start();
+
+      let currentStep = 0;
+      const totalSteps = engine.getTotalSteps();
+      setStepCount({ current: 0, total: totalSteps });
+      setProgress(0);
+
+      const interval = setInterval(() => {
+        currentStep++;
+        if (currentStep < totalSteps) {
+          engine.goToStep(currentStep);
+
+          // Trigger audio effects based on step (approximate triggering logic)
+          // This can be refined later based on engine state hints
+          audioMgr.playCompare();
+
+          setStepCount({ current: currentStep, total: totalSteps });
+          setProgress(Math.round((currentStep / totalSteps) * 100));
+        } else {
+          clearInterval(interval);
+          // Wait extra frame at the end for last step visibility
+          setTimeout(() => {
+            audioMgr.playComplete();
+            setTimeout(() => {
+              mediaRecorder.stop();
+            }, 100);
+          }, 800);
+        }
+      }, 1400);
     } catch (err) {
       console.error('Recording failed:', err);
     } finally {
@@ -86,11 +155,11 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400">Capture Method:</span>
-            <span className="font-mono text-cyan-400">canvas.captureStream()</span>
+            <span className="font-mono text-cyan-400">canvas.captureStream() + Web Audio SFX</span>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400">Output Container:</span>
-            <span className="font-mono text-emerald-400">WebM (VP9 / H.264)</span>
+            <span className="font-mono text-emerald-400">WebM (VP9 + Opus Audio)</span>
           </div>
           <div className="flex justify-between">
             <span className="text-slate-400">Pacing:</span>
