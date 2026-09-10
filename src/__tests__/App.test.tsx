@@ -27,4 +27,23 @@ describe('App Integration', () => {
       screen.getByRole('heading', { name: /Binary Search/i })
     ).toBeInTheDocument();
   });
+
+  it('defaults to showing Code Walkthrough panel and hiding optional panels', () => {
+    render(<App />);
+    // Code panel is visible (both in toggle button and in panel header)
+    expect(screen.getAllByText(/Code Walkthrough/i).length).toBeGreaterThanOrEqual(1);
+    // Optional panels should not be present initially
+    expect(screen.queryByText(/Intuition & Logic/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Mathematical Invariants/i)).not.toBeInTheDocument();
+  });
+
+  it('allows toggling Intuition panel on and off', () => {
+    render(<App />);
+    const toggleWhyBtn = screen.getByRole('button', { name: /Intuition/i });
+    fireEvent.click(toggleWhyBtn);
+    expect(screen.getByText(/Intuition & Logic/i)).toBeInTheDocument();
+
+    fireEvent.click(toggleWhyBtn);
+    expect(screen.queryByText(/Intuition & Logic/i)).not.toBeInTheDocument();
+  });
 });
