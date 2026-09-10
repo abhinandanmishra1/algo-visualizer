@@ -64,6 +64,9 @@ export class ArrayRenderer implements AlgoRenderer<ArrayData, ArrayState> {
         (state.left !== undefined && i < state.left) ||
         (state.right !== undefined && i > state.right);
 
+      const isActive = state.activeIndices?.includes(i);
+      const isSwapped = (state as any).swappedIndices?.includes(i);
+
       ctx.save();
       // Background & border
       if (isFound) {
@@ -72,6 +75,18 @@ export class ArrayRenderer implements AlgoRenderer<ArrayData, ArrayState> {
         ctx.lineWidth = 3;
         ctx.shadowColor = '#10b981';
         ctx.shadowBlur = 15;
+      } else if (isSwapped) {
+        ctx.fillStyle = '#f59e0b';
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#f59e0b';
+        ctx.shadowBlur = 12;
+      } else if (isActive) {
+        ctx.fillStyle = '#0284c7';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#0ea5e9';
+        ctx.shadowBlur = 12;
       } else if (isMid) {
         ctx.fillStyle = '#818cf8';
         ctx.strokeStyle = '#c7d2fe';
@@ -108,23 +123,36 @@ export class ArrayRenderer implements AlgoRenderer<ArrayData, ArrayState> {
       ctx.fillText(`[${i}]`, x + boxWidth / 2, y + boxHeight + 16);
       ctx.restore();
 
-      // Pointers above / below
-      if (isMid) {
-        drawPointerBadge(
-          ctx,
-          x + boxWidth / 2,
-          y - 20,
-          'MID',
-          isFound ? '#10b981' : '#6366f1',
-          '#ffffff',
-          isFound ? '🎯' : '📍'
-        );
+      // Custom pointers from state.pointers if provided
+      const customPointers = (state as any).pointers?.[i];
+      if (customPointers) {
+        const ptrs = Array.isArray(customPointers) ? customPointers : [customPointers];
+        ptrs.forEach((p: any, pIdx: number) => {
+          const isTop = p.position === 'top' || p.position === undefined;
+          const py = isTop ? y - 20 - pIdx * 24 : y + boxHeight + 36 + pIdx * 24;
+          drawPointerBadge(ctx, x + boxWidth / 2, py, p.label, p.color || '#6366f1', '#ffffff', p.icon || '📍');
+        });
       }
-      if (isLeft && !isMid) {
-        drawPointerBadge(ctx, x + boxWidth / 2, y + boxHeight + 36, 'L', '#06b6d4', '#ffffff', '👈');
-      }
-      if (isRight && !isMid) {
-        drawPointerBadge(ctx, x + boxWidth / 2, y + boxHeight + 36, 'R', '#f43f5e', '#ffffff', '👉');
+
+      // Default L / R / MID Pointers above / below if no custom pointer for this cell
+      if (!customPointers) {
+        if (isMid) {
+          drawPointerBadge(
+            ctx,
+            x + boxWidth / 2,
+            y - 20,
+            'MID',
+            isFound ? '#10b981' : '#6366f1',
+            '#ffffff',
+            isFound ? '🎯' : '📍'
+          );
+        }
+        if (isLeft && !isMid) {
+          drawPointerBadge(ctx, x + boxWidth / 2, y + boxHeight + 36, 'L', '#06b6d4', '#ffffff', '👈');
+        }
+        if (isRight && !isMid) {
+          drawPointerBadge(ctx, x + boxWidth / 2, y + boxHeight + 36, 'R', '#f43f5e', '#ffffff', '👉');
+        }
       }
     }
 
