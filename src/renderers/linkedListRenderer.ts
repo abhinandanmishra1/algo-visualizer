@@ -214,56 +214,81 @@ export class LinkedListRenderer implements AlgoRenderer<LinkedListData, LinkedLi
       ctx.restore();
     });
 
-    // 3. Draw Pointers (Slow 🐢 & Fast 🐇)
-    const slowNode = positions[state.slowIndex];
-    const fastNode = positions[state.fastIndex];
-
-    if (slowNode && fastNode && state.slowIndex === state.fastIndex) {
-      // Both at the same node!
-      const badgeY = slowNode.y - slowNode.radius - 22;
-      if (state.collision) {
-        drawPointerBadge(
-          ctx,
-          slowNode.x,
-          badgeY,
-          'COLLISION! (Slow == Fast)',
-          '#f59e0b',
-          '#0f172a',
-          '⚡'
-        );
-      } else {
-        drawPointerBadge(
-          ctx,
-          slowNode.x,
-          badgeY,
-          'Slow & Fast',
-          '#6366f1',
-          '#ffffff',
-          '🐢🐇'
-        );
-      }
+    // 3. Draw Pointers
+    const customPointers = (state as any).pointers;
+    if (customPointers && typeof customPointers === 'object') {
+      Object.entries(customPointers).forEach(([nodeIdxStr, ptr]: [string, any]) => {
+        const nodeIdx = parseInt(nodeIdxStr, 10);
+        const nodePos = positions[nodeIdx];
+        if (!nodePos) return;
+        const ptrList = Array.isArray(ptr) ? ptr : [ptr];
+        ptrList.forEach((p: any, pIdx: number) => {
+          const isTop = p.position === 'top' || p.position === undefined;
+          const py = isTop
+            ? nodePos.y - nodePos.radius - 20 - pIdx * 24
+            : nodePos.y + nodePos.radius + 28 + pIdx * 24;
+          drawPointerBadge(
+            ctx,
+            nodePos.x,
+            py,
+            p.label,
+            p.color || '#6366f1',
+            '#ffffff',
+            p.icon || '📍'
+          );
+        });
+      });
     } else {
-      if (slowNode) {
-        drawPointerBadge(
-          ctx,
-          slowNode.x,
-          slowNode.y - slowNode.radius - 20,
-          'Slow',
-          '#10b981',
-          '#ffffff',
-          '🐢'
-        );
-      }
-      if (fastNode) {
-        drawPointerBadge(
-          ctx,
-          fastNode.x,
-          fastNode.y + fastNode.radius + 28,
-          'Fast',
-          '#f43f5e',
-          '#ffffff',
-          '🐇'
-        );
+      const slowNode = positions[state.slowIndex];
+      const fastNode = positions[state.fastIndex];
+
+      if (slowNode && fastNode && state.slowIndex === state.fastIndex) {
+        // Both at the same node!
+        const badgeY = slowNode.y - slowNode.radius - 22;
+        if (state.collision) {
+          drawPointerBadge(
+            ctx,
+            slowNode.x,
+            badgeY,
+            'COLLISION! (Slow == Fast)',
+            '#f59e0b',
+            '#0f172a',
+            '⚡'
+          );
+        } else {
+          drawPointerBadge(
+            ctx,
+            slowNode.x,
+            badgeY,
+            'Slow & Fast',
+            '#6366f1',
+            '#ffffff',
+            '🐢🐇'
+          );
+        }
+      } else {
+        if (slowNode) {
+          drawPointerBadge(
+            ctx,
+            slowNode.x,
+            slowNode.y - slowNode.radius - 20,
+            'Slow',
+            '#10b981',
+            '#ffffff',
+            '🐢'
+          );
+        }
+        if (fastNode) {
+          drawPointerBadge(
+            ctx,
+            fastNode.x,
+            fastNode.y + fastNode.radius + 28,
+            'Fast',
+            '#f43f5e',
+            '#ffffff',
+            '🐇'
+          );
+        }
       }
     }
 
