@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { AlgoRenderer, RenderOptions } from '../renderers/types';
 import { setupCanvas } from '../renderers/canvasUtils';
 
@@ -35,11 +35,12 @@ export const CanvasVisualizer = forwardRef<HTMLCanvasElement, CanvasVisualizerPr
 
       const renderCanvas = () => {
         const rect = container.getBoundingClientRect();
-        const width = Math.max(300, rect.width);
-        const height = Math.max(200, rect.height);
-        const dpr = window.devicePixelRatio || 1;
+        const width = Math.max(300, rect.width || 800);
+        const height = Math.max(200, rect.height || 450);
+        const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
 
         const ctx = setupCanvas(canvas, width, height, dpr);
+        if (!ctx) return;
 
         const options: RenderOptions = {
           width,
@@ -54,15 +55,15 @@ export const CanvasVisualizer = forwardRef<HTMLCanvasElement, CanvasVisualizerPr
 
       renderCanvas();
 
-      const observer = new ResizeObserver(() => {
-        renderCanvas();
-      });
-
-      observer.observe(container);
-
-      return () => {
-        observer.disconnect();
-      };
+      if (typeof ResizeObserver !== 'undefined') {
+        const observer = new ResizeObserver(() => {
+          renderCanvas();
+        });
+        observer.observe(container);
+        return () => {
+          observer.disconnect();
+        };
+      }
     }, [renderer, data, state, aspectRatio, burnInCaption]);
 
     return (

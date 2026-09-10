@@ -3,15 +3,21 @@ export function setupCanvas(
   width: number,
   height: number,
   dpr: number = window.devicePixelRatio || 1
-): CanvasRenderingContext2D {
+): CanvasRenderingContext2D | null {
   canvas.width = Math.floor(width * dpr);
   canvas.height = Math.floor(height * dpr);
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
 
-  const ctx = canvas.getContext('2d')!;
-  ctx.resetTransform();
-  ctx.scale(dpr, dpr);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  if (typeof ctx.resetTransform === 'function') {
+    ctx.resetTransform();
+  }
+  if (typeof ctx.scale === 'function') {
+    ctx.scale(dpr, dpr);
+  }
   return ctx;
 }
 
@@ -77,7 +83,6 @@ export function drawCurvedArrow(
   ctx.quadraticCurveTo(ctrlX, ctrlY, toX, toY);
   ctx.stroke();
 
-  // Tangent angle at the endpoint
   const angle = Math.atan2(toY - ctrlY, toX - ctrlX);
 
   ctx.beginPath();
@@ -107,24 +112,25 @@ export function drawPointerBadge(
   ctx.save();
   ctx.font = 'bold 12px Inter, sans-serif';
   const label = icon ? `${icon} ${text}` : text;
-  const metrics = ctx.measureText(label);
+  const metrics = ctx.measureText ? ctx.measureText(label) : { width: 40 };
   const padX = 10;
-  const padY = 5;
   const badgeWidth = metrics.width + padX * 2;
   const badgeHeight = 24;
 
   const bx = x - badgeWidth / 2;
   const by = y - badgeHeight / 2;
 
-  // Background pill
   ctx.fillStyle = bgColor;
   ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
   ctx.shadowBlur = 8;
   ctx.beginPath();
-  ctx.roundRect(bx, by, badgeWidth, badgeHeight, 12);
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(bx, by, badgeWidth, badgeHeight, 12);
+  } else {
+    ctx.rect(bx, by, badgeWidth, badgeHeight);
+  }
   ctx.fill();
 
-  // Reset shadow for text
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
 
@@ -153,7 +159,11 @@ export function drawBurnInCaption(
   ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.roundRect(boxX, boxY, boxW, boxHeight, 12);
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(boxX, boxY, boxW, boxHeight, 12);
+  } else {
+    ctx.rect(boxX, boxY, boxW, boxHeight);
+  }
   ctx.fill();
   ctx.stroke();
 
