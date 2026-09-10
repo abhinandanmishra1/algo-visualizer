@@ -38,9 +38,9 @@ export const floydCycleConfig: AlgoConfig = {
     ],
   },
   panels: {
-    why: true,
-    formula: true,
-    distanceMap: true,
+    why: false,
+    formula: false,
+    distanceMap: false,
     code: true,
   },
   steps: [
@@ -52,9 +52,9 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'Both Slow (tortoise) and Fast (hare) pointers start at the head node [0].',
       caption: 'Both Slow and Fast pointers initialize at head (node 0)',
       formulaActive: [
-        { label: 'Relative Speed', math: 'v_{fast} = 2 \\times v_{slow}', active: true, explanation: 'Fast covers double distance each tick' },
-        { label: 'Distance Traveled', math: 'd_{fast} = 2 \\times d_{slow}', active: true },
-        { label: 'Meeting Equation', math: '2k - k = nC \\implies k = nC', active: false },
+        { label: 'Relative Speed', math: 'v_fast = 2 × v_slow', active: true, explanation: 'Fast covers double distance each tick' },
+        { label: 'Distance Traveled', math: 'd_fast = 2 × d_slow', active: true },
+        { label: 'Meeting Equation', math: '2k − k = nC  ⟹  k = nC', active: false },
       ],
       distanceMap: [
         { label: 'Slow Distance (k)', value: 0 },
@@ -71,7 +71,7 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'fast and fast.next are non-null. Safe to advance both pointers without null pointer error.',
       caption: 'Check fast and fast.next are valid',
       formulaActive: [
-        { label: 'Guard Condition', math: 'fast \\ne \\text{null} \\land fast.next \\ne \\text{null}', active: true },
+        { label: 'Guard Condition', math: 'fast ≠ null ∧ fast.next ≠ null', active: true },
       ],
       distanceMap: [
         { label: 'Slow Distance (k)', value: 0 },
@@ -87,7 +87,7 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'slow = slow.next: Slow pointer advances 1 node forward to node 1.',
       caption: 'Slow advances 1 step to node 1',
       formulaActive: [
-        { label: 'Slow Distance', math: 'd_{slow} = 1', active: true },
+        { label: 'Slow Distance', math: 'd_slow = 1', active: true },
       ],
       distanceMap: [
         { label: 'Slow Distance (k)', value: 1 },
@@ -102,7 +102,7 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'fast = fast.next.next: Fast pointer advances 2 nodes forward to node 2.',
       caption: 'Fast advances 2 steps to node 2',
       formulaActive: [
-        { label: 'Speed Ratio', math: 'd_{fast} = 2 \\times d_{slow} = 2', active: true },
+        { label: 'Speed Ratio', math: 'd_fast = 2 × d_slow = 2', active: true },
       ],
       distanceMap: [
         { label: 'Slow Distance (k)', value: 1 },
@@ -117,7 +117,7 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'slow (node 1) != fast (node 2). No collision yet. Continue while loop.',
       caption: 'slow (1) != fast (2) -> continue loop',
       formulaActive: [
-        { label: 'Collision Check', math: 'slow \\ne fast \\implies \\text{continue}', active: true },
+        { label: 'Collision Check', math: 'slow ≠ fast  ⟹  continue', active: true },
       ],
       distanceMap: [
         { label: 'Gap in loop', value: '1 step' },
@@ -131,7 +131,7 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'Slow advances 1 step to node 2. Total slow distance = 2.',
       caption: 'Slow advances 1 step to node 2',
       formulaActive: [
-        { label: 'Slow Distance', math: 'd_{slow} = 2', active: true },
+        { label: 'Slow Distance', math: 'd_slow = 2', active: true },
       ],
       distanceMap: [
         { label: 'Slow Distance (k)', value: 2 },
@@ -146,8 +146,8 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'Fast advances 2 steps: node 2 -> node 3 -> loops back to node 1! Fast is now inside the loop.',
       caption: 'Fast loops back around to node 1',
       formulaActive: [
-        { label: 'Cycle Wrap', math: 'fast \\text{ wrapped back to node 1}', active: true },
-        { label: 'Distance Traveled', math: 'd_{fast} = 4, \\; d_{slow} = 2', active: true },
+        { label: 'Cycle Wrap', math: 'fast wrapped back to node 1', active: true },
+        { label: 'Distance Traveled', math: 'd_fast = 4, d_slow = 2', active: true },
       ],
       distanceMap: [
         { label: 'Slow Distance (k)', value: 2 },
@@ -162,7 +162,7 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'Slow moves to node 3. Total slow distance = 3.',
       caption: 'Slow moves to node 3',
       formulaActive: [
-        { label: 'Slow Distance', math: 'd_{slow} = 3', active: true },
+        { label: 'Slow Distance', math: 'd_slow = 3', active: true },
       ],
       distanceMap: [
         { label: 'Slow Distance (k)', value: 3 },
@@ -176,7 +176,7 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'Fast advances 2 steps: node 1 -> node 2 -> node 3. COLLISION! Both pointers meet at node 3.',
       caption: 'COLLISION DETECTED! Slow and Fast meet at node 3',
       formulaActive: [
-        { label: 'Collision Equation', math: '2k - k = nC \\implies 6 - 3 = 3', active: true, explanation: 'Relative difference is exactly 1 full cycle length (C=3)' },
+        { label: 'Collision Equation', math: '2k − k = nC  ⟹  6 − 3 = 3', active: true, explanation: 'Relative difference is exactly 1 full cycle length (C=3)' },
         { label: 'Loop Theorem', math: 'k = nC', active: true },
       ],
       distanceMap: [
@@ -193,8 +193,8 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'Phase 2 begins: reset Slow to the head node (node 0) while keeping Fast at meeting point (node 3). Both will now move 1 step at a time.',
       caption: 'Reset Slow to head node 0; Fast stays at meeting node 3',
       formulaActive: [
-        { label: 'Cycle Start Math', math: 'a = nC - b', active: true, explanation: 'Distance from head to cycle start equals distance from meeting point to cycle start' },
-        { label: 'Equal Velocity', math: 'v_{slow} = v_{fast} = 1', active: true },
+        { label: 'Cycle Start Math', math: 'a = nC − b', active: true, explanation: 'Distance from head to cycle start equals distance from meeting point to cycle start' },
+        { label: 'Equal Velocity', math: 'v_slow = v_fast = 1', active: true },
       ],
       distanceMap: [
         { label: 'Head to Start (a)', value: '1 step' },
@@ -210,7 +210,7 @@ export const floydCycleConfig: AlgoConfig = {
       why: 'Slow moves 1 step (node 0 -> node 1). Fast moves 1 step (node 3 -> node 1). They meet at node 1 — the START OF THE CYCLE!',
       caption: 'Cycle start confirmed at Node 1 (value 2)!',
       formulaActive: [
-        { label: 'Cycle Start Proved', math: 'slow == fast \\implies \\text{Start} = \\text{Node 1}', active: true },
+        { label: 'Cycle Start Proved', math: 'slow == fast  ⟹  Start = Node 1', active: true },
         { label: 'Time Complexity', math: 'O(N)', active: true, explanation: 'Visits each node at most twice' },
         { label: 'Space Complexity', math: 'O(1)', active: true, explanation: 'Only two pointer references' },
       ],

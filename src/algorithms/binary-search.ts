@@ -29,9 +29,9 @@ export const binarySearchConfig: AlgoConfig = {
     ],
   },
   panels: {
-    why: true,
-    formula: true,
-    distanceMap: true,
+    why: false,
+    formula: false,
+    distanceMap: false,
     code: true,
   },
   steps: [
@@ -44,7 +44,7 @@ export const binarySearchConfig: AlgoConfig = {
       caption: 'Initialize left = 0, right = 9 for target 23',
       formulaActive: [
         { label: 'Search Space Size', math: 'N = 10', active: true },
-        { label: 'Complexity Ceiling', math: '\\lceil \\log_2 10 \\rceil = 4 \\text{ comparisons}', active: true },
+        { label: 'Complexity Ceiling', math: '⌈log₂ 10⌉ = 4 comparisons', active: true },
       ],
       distanceMap: [
         { label: 'Search Range', value: '[0 .. 9]' },
@@ -60,7 +60,7 @@ export const binarySearchConfig: AlgoConfig = {
       why: 'mid = (0 + 9) // 2 = 4. Element at mid is arr[4] = 16.',
       caption: 'Calculate mid = (0 + 9) // 2 = 4 (value: 16)',
       formulaActive: [
-        { label: 'Mid Formula', math: 'mid = \\lfloor \\frac{0 + 9}{2} \\rfloor = 4', active: true },
+        { label: 'Mid Formula', math: 'mid = ⌊(0 + 9) / 2⌋ = 4', active: true },
         { label: 'Comparison', math: 'arr[4] = 16 < 23', active: true },
       ],
       distanceMap: [
@@ -77,8 +77,8 @@ export const binarySearchConfig: AlgoConfig = {
       why: '16 < 23: target must reside in right half. Discard indices 0..4, set left = mid + 1 = 5.',
       caption: 'arr[mid] < target: discard left half, left = 5',
       formulaActive: [
-        { label: 'Branch Taken', math: 'arr[mid] < target \\implies left = mid + 1', active: true },
-        { label: 'Halved Space', math: 'N_{new} = 5 \\approx \\frac{10}{2}', active: true },
+        { label: 'Branch Taken', math: 'arr[mid] < target  ⟹  left = mid + 1', active: true },
+        { label: 'Halved Space', math: 'N_new = 5 ≈ 10 / 2', active: true },
       ],
       distanceMap: [
         { label: 'Search Range', value: '[5 .. 9]', highlight: true },
@@ -93,7 +93,7 @@ export const binarySearchConfig: AlgoConfig = {
       why: 'mid = (5 + 9) // 2 = 7. Element at mid is arr[7] = 56.',
       caption: 'Calculate mid = (5 + 9) // 2 = 7 (value: 56)',
       formulaActive: [
-        { label: 'Mid Formula', math: 'mid = \\lfloor \\frac{5 + 9}{2} \\rfloor = 7', active: true },
+        { label: 'Mid Formula', math: 'mid = ⌊(5 + 9) / 2⌋ = 7', active: true },
         { label: 'Comparison', math: 'arr[7] = 56 > 23', active: true },
       ],
       distanceMap: [
@@ -109,8 +109,8 @@ export const binarySearchConfig: AlgoConfig = {
       why: '56 > 23: target must reside to the left of 56. Discard indices 7..9, set right = mid - 1 = 6.',
       caption: 'arr[mid] > target: discard right half, right = 6',
       formulaActive: [
-        { label: 'Branch Taken', math: 'arr[mid] > target \\implies right = mid - 1', active: true },
-        { label: 'Remaining Space', math: 'N_{new} = 2', active: true },
+        { label: 'Branch Taken', math: 'arr[mid] > target  ⟹  right = mid − 1', active: true },
+        { label: 'Remaining Space', math: 'N_new = 2', active: true },
       ],
       distanceMap: [
         { label: 'Search Range', value: '[5 .. 6]', highlight: true },
@@ -125,8 +125,8 @@ export const binarySearchConfig: AlgoConfig = {
       why: 'mid = (5 + 6) // 2 = 5. arr[5] == 23 == target! Match found at index 5.',
       caption: 'TARGET FOUND! arr[5] == 23',
       formulaActive: [
-        { label: 'Success Match', math: 'arr[mid] == target \\implies \\text{return } 5', active: true },
-        { label: 'Total Steps', math: '3 \\text{ comparisons} \\le \\lceil \\log_2 10 \\rceil', active: true },
+        { label: 'Success Match', math: 'arr[mid] == target  ⟹  return 5', active: true },
+        { label: 'Total Steps', math: '3 comparisons ≤ ⌈log₂ 10⌉', active: true },
       ],
       distanceMap: [
         { label: 'Found Index', value: 5, highlight: true },
