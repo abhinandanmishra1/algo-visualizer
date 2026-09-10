@@ -36,7 +36,7 @@ export default function App() {
     pause,
     reset,
     setSpeed,
-    getSpeed,
+    speed,
   } = useAlgoEngine(currentAlgo.steps);
 
   const handleSelectAlgo = (id: string) => {
@@ -178,7 +178,7 @@ export default function App() {
             currentStep={currentStepIndex}
             totalSteps={totalSteps}
             isPlaying={isPlaying}
-            speedMs={getSpeed()}
+            speedMs={speed}
             onPlay={play}
             onPause={pause}
             onNext={goNext}
