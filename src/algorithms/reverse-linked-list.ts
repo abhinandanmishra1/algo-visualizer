@@ -44,6 +44,7 @@ export const reverseLinkedListConfig: AlgoConfig = {
       state: {
         slowIndex: 0,
         fastIndex: 0,
+        reversedUpTo: 0,
         pointers: {
           0: { label: 'curr (1)', color: '#06b6d4', icon: '👉', position: 'top' },
         },
@@ -66,6 +67,7 @@ export const reverseLinkedListConfig: AlgoConfig = {
       state: {
         slowIndex: 0,
         fastIndex: 1,
+        reversedUpTo: 0,
         pointers: {
           0: { label: 'prev (1)', color: '#8b5cf6', icon: '📍', position: 'bottom' },
           1: { label: 'curr (2)', color: '#06b6d4', icon: '👉', position: 'top' },
@@ -90,6 +92,7 @@ export const reverseLinkedListConfig: AlgoConfig = {
       state: {
         slowIndex: 1,
         fastIndex: 2,
+        reversedUpTo: 1,
         pointers: {
           1: { label: 'prev (2)', color: '#8b5cf6', icon: '📍', position: 'bottom' },
           2: { label: 'curr (3)', color: '#06b6d4', icon: '👉', position: 'top' },
@@ -114,6 +117,7 @@ export const reverseLinkedListConfig: AlgoConfig = {
       state: {
         slowIndex: 2,
         fastIndex: 3,
+        reversedUpTo: 2,
         pointers: {
           2: { label: 'prev (3)', color: '#8b5cf6', icon: '📍', position: 'bottom' },
           3: { label: 'curr (4)', color: '#06b6d4', icon: '👉', position: 'top' },
@@ -138,6 +142,7 @@ export const reverseLinkedListConfig: AlgoConfig = {
       state: {
         slowIndex: 3,
         fastIndex: 4,
+        reversedUpTo: 3,
         pointers: {
           3: { label: 'prev (4)', color: '#8b5cf6', icon: '📍', position: 'bottom' },
           4: { label: 'curr (5)', color: '#06b6d4', icon: '👉', position: 'top' },
@@ -162,6 +167,7 @@ export const reverseLinkedListConfig: AlgoConfig = {
         slowIndex: 4,
         fastIndex: 4,
         collision: true,
+        reversedUpTo: 4,
         pointers: {
           4: { label: 'NEW HEAD (5)', color: '#10b981', icon: '👑', position: 'top' },
         },

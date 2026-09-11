@@ -1,8 +1,10 @@
 import { Outlet } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export default function App() {
   return (
+    <TooltipProvider>
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased">
       {/* Top Navbar */}
       <header className="border-b border-slate-850 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4">
@@ -31,5 +33,6 @@ export default function App() {
         <Outlet />
       </main>
     </div>
+    </TooltipProvider>
   );
 }

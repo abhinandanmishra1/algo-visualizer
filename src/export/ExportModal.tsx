@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Download, Film, CheckCircle2, Loader2, X } from 'lucide-react';
+import { useState } from 'react';
+import { Download, Film, CheckCircle2, Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { PlaybackEngine } from '../engine/engine';
 import { createAudioSfxManager } from './audioSfx';
 
@@ -12,20 +14,11 @@ interface ExportModalProps {
   aspectRatio: '16:9' | '9:16';
 }
 
-export const ExportModal: React.FC<ExportModalProps> = ({
-  isOpen,
-  onClose,
-  canvasRef,
-  engine,
-  algoTitle,
-  aspectRatio,
-}) => {
+export function ExportModal({ isOpen, onClose, canvasRef, engine, algoTitle, aspectRatio }: ExportModalProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [progress, setProgress] = useState(0);
   const [stepCount, setStepCount] = useState({ current: 0, total: 0 });
   const [isFinished, setIsFinished] = useState(false);
-
-  if (!isOpen) return null;
 
   const handleStartExport = async () => {
     if (!canvasRef.current) return;
@@ -37,21 +30,17 @@ export const ExportModal: React.FC<ExportModalProps> = ({
     const filename = `${safeTitle}-${aspectRatio === '9:16' ? 'reel' : 'widescreen'}.webm`;
 
     try {
-      // Create audio SFX manager for synchronized sound effects
       const audioMgr = createAudioSfxManager();
 
-      // Get supported mime type and prepare recording
       const canvas = canvasRef.current;
       const videoStream = canvas.captureStream(30);
       const audioStream = audioMgr.getAudioStream();
 
-      // Composite video and audio tracks into single MediaStream
       const combinedStream = new MediaStream([
         ...videoStream.getTracks(),
         ...audioStream.getAudioTracks(),
       ]);
 
-      // Record combined stream (video + audio)
       const mimeType = 'video/webm;codecs=vp9,opus';
       if (!MediaRecorder.isTypeSupported(mimeType)) {
         throw new Error(`Unsupported mime type: ${mimeType}`);
@@ -83,9 +72,9 @@ export const ExportModal: React.FC<ExportModalProps> = ({
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
         }, 100);
+        setIsFinished(true);
       };
 
-      // Reset engine and start recording
       engine.reset();
       mediaRecorder.start();
 
@@ -98,16 +87,12 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         currentStep++;
         if (currentStep < totalSteps) {
           engine.goToStep(currentStep);
-
-          // Trigger audio effects based on step (approximate triggering logic)
-          // This can be refined later based on engine state hints
           audioMgr.playCompare();
 
           setStepCount({ current: currentStep, total: totalSteps });
           setProgress(Math.round((currentStep / totalSteps) * 100));
         } else {
           clearInterval(interval);
-          // Wait extra frame at the end for last step visibility
           setTimeout(() => {
             audioMgr.playComplete();
             setTimeout(() => {
@@ -124,31 +109,23 @@ export const ExportModal: React.FC<ExportModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl relative">
-        <button
-          type="button"
-          onClick={onClose}
-          disabled={isRecording}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 disabled:opacity-30"
-          aria-label="Close"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2.5 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
-            <Film className="w-5 h-5" />
+    <Dialog open={isOpen} onOpenChange={(open) => !open && !isRecording && onClose()}>
+      <DialogContent className="max-w-md bg-slate-900 border border-slate-800 text-slate-100" showCloseButton={!isRecording}>
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+              <Film className="w-5 h-5" />
+            </div>
+            <div>
+              <DialogTitle className="text-slate-100">Export Animation</DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Format: {aspectRatio === '9:16' ? '9:16 Vertical Reel' : '16:9 Widescreen'}
+              </DialogDescription>
+            </div>
           </div>
-          <div>
-            <h3 className="font-bold text-slate-100 text-lg">Export Animation</h3>
-            <p className="text-xs text-slate-400">
-              Format: {aspectRatio === '9:16' ? '9:16 Vertical Reel' : '16:9 Widescreen'}
-            </p>
-          </div>
-        </div>
+        </DialogHeader>
 
-        <div className="bg-slate-950/60 rounded-xl p-4 border border-slate-850 mb-6 space-y-2 text-xs text-slate-300">
+        <div className="bg-slate-950/60 rounded-xl p-4 border border-slate-800 space-y-2 text-xs text-slate-300">
           <div className="flex justify-between">
             <span className="text-slate-400">Algorithm:</span>
             <span className="font-semibold text-slate-200">{algoTitle}</span>
@@ -168,7 +145,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         </div>
 
         {isRecording && (
-          <div className="space-y-2 mb-6">
+          <div className="space-y-2">
             <div className="flex justify-between text-xs font-semibold text-slate-300">
               <span>Recording frames...</span>
               <span>
@@ -185,41 +162,35 @@ export const ExportModal: React.FC<ExportModalProps> = ({
         )}
 
         {isFinished && (
-          <div className="flex items-center gap-2 p-3 bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 rounded-xl mb-6 text-sm">
+          <div className="flex items-center gap-2 p-3 bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 rounded-xl text-sm">
             <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
             <span>Video successfully generated and downloaded!</span>
           </div>
         )}
 
         <div className="flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isRecording}
-            className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 disabled:opacity-40"
-          >
+          <Button variant="ghost" onClick={onClose} disabled={isRecording}>
             Cancel
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={handleStartExport}
             disabled={isRecording}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-lg shadow-indigo-600/30 disabled:opacity-50"
+            className="gap-2 bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/30"
           >
             {isRecording ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="animate-spin" />
                 <span>Recording Video...</span>
               </>
             ) : (
               <>
-                <Download className="w-4 h-4" />
+                <Download />
                 <span>Start Export</span>
               </>
             )}
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
-};
+}

@@ -14,6 +14,11 @@ export interface ArrayState {
   found?: boolean;
   activeIndices?: number[];
   eliminatedIndices?: number[];
+  /** Per-step override of the array's current values (e.g. sorting algorithms mutating in place). */
+  elements?: (number | string)[];
+  swappedIndices?: number[];
+  sortedUntil?: number;
+  pointers?: Record<number, any>;
 }
 
 export class ArrayRenderer implements AlgoRenderer<ArrayData, ArrayState> {
@@ -27,7 +32,7 @@ export class ArrayRenderer implements AlgoRenderer<ArrayData, ArrayState> {
 
     ctx.clearRect(0, 0, width, height);
 
-    const elements = data.elements;
+    const elements = state.elements ?? data.elements;
     const n = elements.length;
     if (n === 0) return;
 
