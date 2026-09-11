@@ -18,7 +18,7 @@ export function generateBubbleSortSteps(input: number[]): AlgoStep[] {
       title: 'Bubble Sort',
       why,
       codeLines,
-      state: { array: [...arr], ...state.state },
+      state: { elements: [...arr], ...state.state },
       caption: state.caption,
       formulaActive: state.formulaActive,
     });
@@ -36,7 +36,7 @@ export function generateBubbleSortSteps(input: number[]): AlgoStep[] {
       emit(
         `Compare arr[${j}]=${arr[j]} and arr[${j + 1}]=${arr[j + 1]}`,
         [2, 3],
-        { state: { compareIndices: [j, j + 1] } }
+        { state: { activeIndices: [j, j + 1] } }
       );
 
       if (arr[j] > arr[j + 1]) {
@@ -82,7 +82,7 @@ export function generateSelectionSortSteps(input: number[]): AlgoStep[] {
       title: 'Selection Sort',
       why,
       codeLines,
-      state: { array: [...arr], ...state.state },
+      state: { elements: [...arr], ...state.state },
       caption: state.caption,
       formulaActive: state.formulaActive,
     });
@@ -106,7 +106,7 @@ export function generateSelectionSortSteps(input: number[]): AlgoStep[] {
       emit(
         `Compare arr[${j}]=${arr[j]} with arr[${minIdx}]=${arr[minIdx]}`,
         [4, 5],
-        { state: { currentIndex: i, minIndex: minIdx, compareIndices: [j, minIdx] } }
+        { state: { currentIndex: i, minIndex: minIdx, activeIndices: [j, minIdx] } }
       );
 
       if (arr[j] < arr[minIdx]) {
@@ -161,7 +161,7 @@ export function generateInsertionSortSteps(input: number[]): AlgoStep[] {
       title: 'Insertion Sort',
       why,
       codeLines,
-      state: { array: [...arr], ...state.state },
+      state: { elements: [...arr], ...state.state },
       caption: state.caption,
       formulaActive: state.formulaActive,
     });
@@ -186,7 +186,7 @@ export function generateInsertionSortSteps(input: number[]): AlgoStep[] {
       emit(
         `Compare arr[${j}]=${arr[j]} > key=${key}`,
         [3],
-        { state: { currentIndex: i, key, compareIndices: [j] } }
+        { state: { currentIndex: i, key, activeIndices: [j] } }
       );
 
       arr[j + 1] = arr[j];
@@ -235,7 +235,7 @@ export function generateMergeSortSteps(input: number[]): AlgoStep[] {
       title: 'Merge Sort',
       why,
       codeLines,
-      state: { array: [...arr], ...state.state },
+      state: { elements: [...arr], ...state.state },
       caption: state.caption,
       formulaActive: state.formulaActive,
     });
@@ -288,6 +288,7 @@ export function generateMergeSortSteps(input: number[]): AlgoStep[] {
           state: {
             mergeRange: [left, right],
             compareValues: [leftArr[i], rightArr[j]],
+            activeIndices: [left + i, mid + 1 + j],
             depth,
           },
         }
@@ -298,7 +299,7 @@ export function generateMergeSortSteps(input: number[]): AlgoStep[] {
         emit(
           `Place ${leftArr[i]} at position ${k}`,
           [7],
-          { state: { mergeRange: [left, right], placeIndex: k, depth } }
+          { state: { mergeRange: [left, right], placeIndex: k, swappedIndices: [k], depth } }
         );
         i++;
       } else {
@@ -306,7 +307,7 @@ export function generateMergeSortSteps(input: number[]): AlgoStep[] {
         emit(
           `Place ${rightArr[j]} at position ${k}`,
           [7],
-          { state: { mergeRange: [left, right], placeIndex: k, depth } }
+          { state: { mergeRange: [left, right], placeIndex: k, swappedIndices: [k], depth } }
         );
         j++;
       }
@@ -363,7 +364,7 @@ export function generateQuickSortSteps(input: number[]): AlgoStep[] {
       title: 'Quick Sort',
       why,
       codeLines,
-      state: { array: [...arr], ...state.state },
+      state: { elements: [...arr], ...state.state },
       caption: state.caption,
       formulaActive: state.formulaActive,
     });
@@ -389,7 +390,7 @@ export function generateQuickSortSteps(input: number[]): AlgoStep[] {
       emit(
         `Compare arr[${j}]=${arr[j]} with pivot=${pivot}`,
         [3],
-        { state: { partitionRange: [low, high], pivot, compareIndex: j, depth } }
+        { state: { partitionRange: [low, high], pivot, activeIndices: [j], depth } }
       );
 
       if (arr[j] < pivot) {

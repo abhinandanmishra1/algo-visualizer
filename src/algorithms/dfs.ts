@@ -10,23 +10,20 @@ const exampleGraph = {
   'F': []
 };
 
+const graphEdges = Object.entries(exampleGraph).flatMap(([from, tos]) =>
+  tos.map((to) => ({ from, to }))
+);
+
 export const dfsConfig: AlgoConfig = {
   id: 'dfs',
   title: 'Depth-First Search (DFS)',
   subtitle: 'Explore as deep as possible along each branch before backtracking using recursion or a call stack',
   category: 'Graph',
-  renderer: 'linked-list',
+  renderer: 'graph',
   aspectRatio: '16:9',
   data: {
-    nodes: [
-      { id: '0', val: 'A' },
-      { id: '1', val: 'B' },
-      { id: '2', val: 'C' },
-      { id: '3', val: 'D' },
-      { id: '4', val: 'E' },
-      { id: '5', val: 'F' },
-    ],
-    cycleStartIndex: -1,
+    nodes: Object.keys(exampleGraph).map((id) => ({ id, label: id })),
+    edges: graphEdges,
   },
   code: {
     language: 'python',

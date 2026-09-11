@@ -10,23 +10,20 @@ const exampleGraph = {
   'F': []
 };
 
+const graphEdges = Object.entries(exampleGraph).flatMap(([from, tos]) =>
+  tos.map((to) => ({ from, to }))
+);
+
 export const bfsConfig: AlgoConfig = {
   id: 'bfs',
   title: 'Breadth-First Search (BFS)',
   subtitle: 'Explore the graph level by level in concentric waves using a FIFO queue',
   category: 'Graph',
-  renderer: 'linked-list',
+  renderer: 'graph',
   aspectRatio: '16:9',
   data: {
-    nodes: [
-      { id: '0', val: 'A' },
-      { id: '1', val: 'B' },
-      { id: '2', val: 'C' },
-      { id: '3', val: 'D' },
-      { id: '4', val: 'E' },
-      { id: '5', val: 'F' },
-    ],
-    cycleStartIndex: -1,
+    nodes: Object.keys(exampleGraph).map((id) => ({ id, label: id })),
+    edges: graphEdges,
   },
   code: {
     language: 'python',

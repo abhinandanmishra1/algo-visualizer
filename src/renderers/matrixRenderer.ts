@@ -7,6 +7,8 @@ export interface MatrixData {
   cells: Record<string, any>; // { "r,c": value }
   rowLabels?: string[];
   colLabels?: string[];
+  /** Optional per-row column cap — cells at c >= rowLengths[r] are not rendered at all. */
+  rowLengths?: number[];
 }
 
 export interface MatrixState {
@@ -110,6 +112,8 @@ export class MatrixRenderer implements AlgoRenderer<MatrixData, MatrixState> {
     // Draw grid cells
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
+        if (data.rowLengths && c >= data.rowLengths[r]) continue;
+
         const cellKey = `${r},${c}`;
         const cellX = gridStartX + c * cellW;
         const cellY = gridStartY + r * cellH;

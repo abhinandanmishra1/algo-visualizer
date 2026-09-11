@@ -23,6 +23,13 @@ export interface LinkedListState {
   cycleStartIndex?: number;
   phase?: 'detection' | 'find_start' | 'completed';
   collision?: boolean;
+  /**
+   * Number of leading edges (0-1, 1-2, ...) that have been flipped to point
+   * backward — used by in-place reversal algorithms so the arrows actually
+   * change direction as the list gets reversed.
+   */
+  reversedUpTo?: number;
+  pointers?: Record<number, any>;
 }
 
 export interface NodePosition {
@@ -126,15 +133,19 @@ export class LinkedListRenderer implements AlgoRenderer<LinkedListData, LinkedLi
       const curr = positions[i];
 
       if (i < positions.length - 1) {
-        // Normal linear edge or in-cycle edge
+        // Normal linear edge or in-cycle edge — flipped to point backward
+        // once a reversal algorithm has rewired it (state.reversedUpTo).
         const next = positions[i + 1];
-        const angle = Math.atan2(next.y - curr.y, next.x - curr.x);
-        const startX = curr.x + curr.radius * Math.cos(angle);
-        const startY = curr.y + curr.radius * Math.sin(angle);
-        const endX = next.x - next.radius * Math.cos(angle);
-        const endY = next.y - next.radius * Math.sin(angle);
+        const isReversed = (state.reversedUpTo ?? 0) > i;
+        const from = isReversed ? next : curr;
+        const to = isReversed ? curr : next;
+        const angle = Math.atan2(to.y - from.y, to.x - from.x);
+        const startX = from.x + from.radius * Math.cos(angle);
+        const startY = from.y + from.radius * Math.sin(angle);
+        const endX = to.x - to.radius * Math.cos(angle);
+        const endY = to.y - to.radius * Math.sin(angle);
 
-        drawArrow(ctx, startX, startY, endX, endY, '#64748b', 9, 2.5);
+        drawArrow(ctx, startX, startY, endX, endY, isReversed ? '#a855f7' : '#64748b', 9, 2.5);
       } else if (data.cycleStartIndex >= 0 && data.cycleStartIndex < positions.length) {
         // Cycle back edge from last node to cycle start node
         const cycleTarget = positions[data.cycleStartIndex];

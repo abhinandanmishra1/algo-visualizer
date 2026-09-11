@@ -39,7 +39,7 @@ describe('Algorithm Registry', () => {
     const algo = getAlgorithm('merge-two-sorted-lists');
     expect(algo).toBeDefined();
     expect(validateAlgoConfig(algo!).valid).toBe(true);
-    expect(algo!.renderer).toBe('array');
+    expect(algo!.renderer).toBe('matrix');
   });
 
   it('loads Bubble Sort config', () => {
@@ -81,14 +81,14 @@ describe('Algorithm Registry', () => {
     const algo = getAlgorithm('dfs');
     expect(algo).toBeDefined();
     expect(validateAlgoConfig(algo!).valid).toBe(true);
-    expect(algo!.renderer).toBe('linked-list');
+    expect(algo!.renderer).toBe('graph');
   });
 
   it('loads BFS config', () => {
     const algo = getAlgorithm('bfs');
     expect(algo).toBeDefined();
     expect(validateAlgoConfig(algo!).valid).toBe(true);
-    expect(algo!.renderer).toBe('linked-list');
+    expect(algo!.renderer).toBe('graph');
   });
 
   it('lists all registered algorithms', () => {

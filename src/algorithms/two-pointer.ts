@@ -7,6 +7,7 @@ export const twoPointerConfig: AlgoConfig = {
   subtitle: 'Find two lines that together with the x-axis form a container holding the most water',
   category: 'Two Pointers',
   renderer: 'array',
+  visualComponent: 'water-container',
   aspectRatio: '16:9',
   data: {
     elements: [1, 8, 6, 2, 5, 4, 8, 3, 7],

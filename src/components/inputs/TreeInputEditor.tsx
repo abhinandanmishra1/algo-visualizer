@@ -8,14 +8,20 @@ import ReactFlow, {
   Connection,
   useNodesState,
   useEdgesState,
+  Background,
+  BackgroundVariant,
   MiniMap,
   Controls,
   NodeTypes,
+  NodeProps,
   Handle,
   Position,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { X, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { arrowEdgeTypes } from '@/flow/edges/ArrowEdge';
+import { getNodeStateStyle } from '@/flow/nodeStateStyles';
 import { TreeData } from '../../renderers/treeRenderer';
 
 export interface TreeInputEditorProps {
@@ -23,40 +29,66 @@ export interface TreeInputEditorProps {
   initialTree?: TreeData;
 }
 
-// Custom tree node component with editable label
-function TreeNode({ data }: { data: { label: string; nodeId: string; onChange: (value: string) => void; onDelete: () => void } }) {
+interface TreeNodeData {
+  label: string;
+  onLabelChange: (value: string) => void;
+  onDelete: () => void;
+  deletable: boolean;
+}
+
+const HANDLE_CLASS =
+  '!h-2.5 !w-2.5 !border !border-slate-300 !bg-slate-500 opacity-0 transition-opacity group-hover:opacity-100';
+
+function EditableTreeNode({ data, selected }: NodeProps<TreeNodeData>) {
+  const style = getNodeStateStyle(selected ? 'active' : 'default');
+  const size = 56;
+
   return (
-    <div className="px-3 py-2 bg-slate-800 border-2 border-slate-600 rounded-lg shadow-lg">
-      <Handle type="target" position={Position.Top} />
-      <div className="flex items-center gap-2">
+    <div className="group relative flex items-center justify-center" style={{ width: size, height: size }}>
+      <Handle type="target" position={Position.Top} className={HANDLE_CLASS} />
+      <div
+        className={`flex h-full w-full items-center justify-center rounded-full border-2 ${style.fill} ${style.border} ${style.ring} transition-colors duration-200`}
+      >
         <input
-          type="text"
           value={data.label}
-          onChange={(e) => data.onChange(e.target.value)}
-          className="w-12 px-2 py-1 bg-slate-900 text-white text-sm text-center border border-slate-600 rounded focus:outline-none focus:border-indigo-500"
+          onChange={(e) => data.onLabelChange(e.target.value)}
           placeholder="0"
+          className={`nodrag w-10 bg-transparent text-center text-sm font-bold outline-none ${style.text}`}
         />
+      </div>
+      <Handle type="source" position={Position.Bottom} className={HANDLE_CLASS} />
+      {data.deletable && (
         <button
-          onClick={data.onDelete}
-          className="p-1 rounded hover:bg-red-600/20 text-red-400 hover:text-red-300 transition"
+          onClick={(e) => {
+            e.stopPropagation();
+            data.onDelete();
+          }}
+          className="nodrag absolute -top-1.5 -right-1.5 hidden h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white shadow-md transition hover:bg-red-500 group-hover:flex"
           title="Delete node"
         >
-          <X size={14} />
+          <X size={12} />
         </button>
-      </div>
-      <Handle type="source" position={Position.Bottom} />
+      )}
     </div>
   );
 }
 
 export default function TreeInputEditor({ onSubmit, initialTree }: TreeInputEditorProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState(
+  const [nodes, setNodes, onNodesChange] = useNodesState<{ label: string }>(
     initialTree
-      ? [{ id: '1', data: { label: String(initialTree.value), nodeId: '1' }, position: { x: 0, y: 0 } }]
-      : [{ id: '1', data: { label: '1', nodeId: '1' }, position: { x: 250, y: 0 } }]
+      ? [
+          {
+            id: '1',
+            type: 'treeNode',
+            data: { label: String(initialTree.value) },
+            position: { x: 250, y: 0 },
+            deletable: false,
+          },
+        ]
+      : [{ id: '1', type: 'treeNode', data: { label: '1' }, position: { x: 250, y: 0 }, deletable: false }]
   );
 
-  const [edges, setEdges, onEdgesChange] = useEdgesState(
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(
     initialTree ? buildEdgesFromTree(initialTree) : []
   );
 
@@ -68,23 +100,44 @@ export default function TreeInputEditor({ onSubmit, initialTree }: TreeInputEdit
     initialTree ? Math.max(...Object.keys(nodeValues).map((id) => parseInt(id))) + 1 : 2
   );
 
+  const handleLabelChange = useCallback(
+    (nodeId: string, value: string) => {
+      setNodeValues((prev) => ({ ...prev, [nodeId]: value }));
+      setNodes((ns) => ns.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, label: value } } : n)));
+    },
+    [setNodes]
+  );
+
+  const deleteNode = useCallback(
+    (nodeId: string) => {
+      if (nodeId === '1') return; // Prevent deleting root
+
+      setNodes((ns) => ns.filter((n) => n.id !== nodeId));
+      setEdges((es) => es.filter((e) => e.source !== nodeId && e.target !== nodeId));
+      setNodeValues((prev) => {
+        const newValues = { ...prev };
+        delete newValues[nodeId];
+        return newValues;
+      });
+    },
+    [setNodes, setEdges]
+  );
+
   const nodeTypes: NodeTypes = useMemo(
     () => ({
-      treeNode: (props: any) => (
-        <TreeNode
+      treeNode: (props: NodeProps<{ label: string }>) => (
+        <EditableTreeNode
+          {...props}
           data={{
-            ...props.data,
-            onChange: (value: string) => {
-              setNodeValues((prev) => ({ ...prev, [props.id]: value }));
-            },
-            onDelete: () => {
-              deleteNode(props.id);
-            },
+            label: props.data.label,
+            deletable: props.id !== '1',
+            onLabelChange: (value) => handleLabelChange(props.id, value),
+            onDelete: () => deleteNode(props.id),
           }}
         />
       ),
     }),
-    []
+    [handleLabelChange, deleteNode]
   );
 
   const onConnect = useCallback(
@@ -93,7 +146,7 @@ export default function TreeInputEditor({ onSubmit, initialTree }: TreeInputEdit
       const sourceChildren = edges.filter((e) => e.source === connection.source);
 
       if (sourceChildren.length < 2) {
-        setEdges((eds) => addEdge(connection, eds));
+        setEdges((eds) => addEdge({ ...connection, type: 'arrow' }, eds));
       }
     },
     [edges, setEdges]
@@ -104,28 +157,15 @@ export default function TreeInputEditor({ onSubmit, initialTree }: TreeInputEdit
     const newNode: Node = {
       id: newId,
       type: 'treeNode',
-      data: { label: '', nodeId: newId },
-      position: { x: Math.random() * 400 - 200, y: Math.random() * 300 + 100 },
+      data: { label: '' },
+      position: { x: Math.random() * 500 + 40, y: Math.random() * 350 + 40 },
     };
     setNodes((ns) => [...ns, newNode]);
     setNodeValues((prev) => ({ ...prev, [newId]: '' }));
     setNextNodeId((prev) => prev + 1);
   };
 
-  const deleteNode = (nodeId: string) => {
-    if (nodeId === '1') return; // Prevent deleting root
-
-    setNodes((ns) => ns.filter((n) => n.id !== nodeId));
-    setEdges((es) => es.filter((e) => e.source !== nodeId && e.target !== nodeId));
-    setNodeValues((prev) => {
-      const newValues = { ...prev };
-      delete newValues[nodeId];
-      return newValues;
-    });
-  };
-
   const handleLayoutTree = () => {
-    // Simple tree layout algorithm
     const updatedNodes = computeTreeLayout(nodes, edges);
     setNodes(updatedNodes);
   };
@@ -141,7 +181,7 @@ export default function TreeInputEditor({ onSubmit, initialTree }: TreeInputEdit
 
   const handleClear = () => {
     if (window.confirm('Clear the entire tree?')) {
-      setNodes([{ id: '1', type: 'treeNode', data: { label: '', nodeId: '1' }, position: { x: 250, y: 0 } }]);
+      setNodes([{ id: '1', type: 'treeNode', data: { label: '' }, position: { x: 250, y: 0 }, deletable: false }]);
       setEdges([]);
       setNodeValues({ '1': '' });
       setNextNodeId(2);
@@ -149,67 +189,55 @@ export default function TreeInputEditor({ onSubmit, initialTree }: TreeInputEdit
   };
 
   return (
-    <div className="p-4">
-      <div className="mb-4">
-        <h3 className="text-white font-semibold mb-3">Build Binary Tree</h3>
-        <div className="flex flex-wrap gap-2 mb-3">
-          <button
-            onClick={handleAddNode}
-            className="flex items-center gap-1 px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm transition"
-            title="Add a new node"
-          >
-            <Plus size={16} />
-            Add Node
-          </button>
-          <button
-            onClick={handleLayoutTree}
-            className="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded text-sm transition"
-            title="Auto-layout tree"
-          >
-            Layout
-          </button>
-          <button
-            onClick={handleClear}
-            className="px-3 py-2 bg-red-700/50 hover:bg-red-700 text-red-200 rounded text-sm transition"
-            title="Clear all nodes"
-          >
-            Clear
-          </button>
-        </div>
+    <div className="flex h-full min-h-0 flex-col gap-3 p-4">
+      <h3 className="text-white font-semibold">Build Binary Tree</h3>
 
-        <div className="text-xs text-slate-400 mb-3 bg-slate-900 p-3 rounded border border-slate-700">
-          <p>• Click on node input fields to edit values</p>
-          <p>• Drag edges from bottom handle to connect (parent → child)</p>
-          <p>• Each node can have at most 2 children (left and right)</p>
-        </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button onClick={handleAddNode} size="lg" title="Add a new node">
+          <Plus size={16} />
+          Add Node
+        </Button>
+        <Button onClick={handleLayoutTree} variant="secondary" size="lg" title="Auto-layout tree">
+          Layout
+        </Button>
+        <Button onClick={handleClear} variant="destructive" size="lg" title="Clear all nodes">
+          Clear
+        </Button>
       </div>
 
-      <div className="h-96 border-2 border-slate-600 rounded mb-4 bg-slate-950 overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
         <ReactFlow
-          nodes={nodes.map((n) => ({
-            ...n,
-            type: n.type || 'treeNode',
-          }))}
+          nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           nodeTypes={nodeTypes}
+          edgeTypes={arrowEdgeTypes}
+          deleteKeyCode={['Delete', 'Backspace']}
           fitView
+          proOptions={{ hideAttribution: true }}
         >
-          <Controls />
-          <MiniMap />
+          <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#1e293b" />
+          <Controls className="!bg-slate-900 !border-slate-700 !fill-slate-300 [&_button]:!border-slate-700 [&_button:hover]:!bg-slate-800" />
+          <MiniMap
+            className="!bg-slate-900 !border !border-slate-700 !w-28 !h-20"
+            maskColor="rgba(2,6,23,0.6)"
+            nodeColor="#334155"
+            pannable
+            zoomable
+          />
         </ReactFlow>
       </div>
 
-      <div className="flex gap-2">
-        <button
-          onClick={handleSubmit}
-          className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition"
-        >
-          Run Algorithm
-        </button>
-      </div>
+      <p className="text-xs text-slate-500">
+        Drag from the bottom of a node to the top of another to connect them (max 2 children). Hover a node for its
+        delete button, or select it and press Delete/Backspace.
+      </p>
+
+      <Button onClick={handleSubmit} size="lg" className="w-full">
+        Run Algorithm
+      </Button>
     </div>
   );
 }
@@ -228,6 +256,7 @@ function buildEdgesFromTree(tree: TreeData, parentId: string = '1', visitedNodes
       id: `${parentId}-${childId}-left`,
       source: parentId,
       target: childId,
+      type: 'arrow',
     });
     edges.push(...buildEdgesFromTree(tree.left, childId, visitedNodes));
     childIndex++;
@@ -239,6 +268,7 @@ function buildEdgesFromTree(tree: TreeData, parentId: string = '1', visitedNodes
       id: `${parentId}-${childId}-right`,
       source: parentId,
       target: childId,
+      type: 'arrow',
     });
     edges.push(...buildEdgesFromTree(tree.right, childId, visitedNodes));
   }
@@ -267,9 +297,6 @@ function buildTreeFromNodes(
 ): TreeData | null {
   const rootNode = nodes.find((n) => n.id === '1');
   if (!rootNode) return null;
-
-  const nodeMap = new Map<string, Node>();
-  nodes.forEach((n) => nodeMap.set(n.id, n));
 
   const buildNode = (nodeId: string, visited = new Set<string>()): TreeData => {
     if (visited.has(nodeId)) return { value: values[nodeId] || 0 };

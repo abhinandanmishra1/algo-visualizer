@@ -2,6 +2,15 @@ export type RendererType = 'array' | 'linked-list' | 'tree' | 'graph' | 'matrix'
 
 export type AspectRatio = '16:9' | '9:16';
 
+/**
+ * Optional escape hatch for topics that need a fully bespoke visualization
+ * instead of the generic StructureFlowVisualizer for `renderer`. When set,
+ * VisualizerLayout renders the matching bespoke component instead of the
+ * generic flow view. Extend this union (and VisualizerLayout's switch) when
+ * adding another one-off visualization — do not special-case by `config.id`.
+ */
+export type VisualComponent = 'water-container';
+
 export interface AlgoPanelsConfig {
   why: boolean;
   formula: boolean;
@@ -42,6 +51,7 @@ export interface AlgoConfig {
   subtitle?: string;
   category: string;
   renderer: RendererType;
+  visualComponent?: VisualComponent;
   aspectRatio?: AspectRatio;
   data: Record<string, any>;
   code: {

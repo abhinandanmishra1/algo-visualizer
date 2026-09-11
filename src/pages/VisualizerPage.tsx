@@ -1,12 +1,39 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
+import { ArrowLeft, Pencil, Film } from 'lucide-react';
 import { catalog } from '../catalog';
-import { AlgoConfig } from '../types/algo';
+import { AlgoConfig, RendererType } from '../types/algo';
 import { VisualizerLayout } from '../components/VisualizerLayout';
+import { ControlBar } from '../components/ControlBar';
+import { PanelToggleBar } from '../components/PanelToggleBar';
 import { useAlgoEngine } from '../engine/useAlgoEngine';
 import { getRenderer } from '../algorithms/registry';
 import { AlgoRenderer } from '../renderers/types';
 import { InputModal } from '../components/InputModal';
+import type { GraphData } from '../renderers/graphRenderer';
+import { ExportModal } from '../export/ExportModal';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+function adjacencyListToGraphData(adj: Record<string | number, (string | number)[]>): GraphData {
+  const ids = Object.keys(adj);
+  const nodes = ids.map((id) => ({ id, label: id }));
+  const edges = ids.flatMap((from) => (adj[from] || []).map((to) => ({ from, to })));
+  return { nodes, edges };
+}
+
+function mapCustomInputToData(renderer: RendererType, currentData: Record<string, any>, customInput: any) {
+  switch (renderer) {
+    case 'array':
+      return { ...currentData, elements: customInput.array };
+    case 'tree':
+      return customInput;
+    case 'graph':
+      return adjacencyListToGraphData(customInput);
+    default:
+      return { ...currentData, ...customInput };
+  }
+}
 
 export default function VisualizerPage() {
   const { subjectId, topicId } = useParams<{ subjectId: string; topicId: string }>();
@@ -18,9 +45,9 @@ export default function VisualizerPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showInputModal, setShowInputModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
   const topicRef = useRef<any>(null);
 
-  // Load config on mount or when params change
   useEffect(() => {
     const loadConfig = async () => {
       try {
@@ -57,12 +84,10 @@ export default function VisualizerPage() {
     loadConfig();
   }, [subjectId, topicId]);
 
-  // Handle custom input submission
   const handleCustomInput = async (customInput: any) => {
     if (!config || !topicRef.current) return;
 
     try {
-      // If topic has buildConfig method, use it; otherwise, create a simple update
       if (
         topicRef.current &&
         typeof (topicRef.current as any).buildConfig === 'function'
@@ -72,14 +97,12 @@ export default function VisualizerPage() {
         );
         setConfig(newConfig);
       } else {
-        // Fallback: update data and assume steps stay the same
-        // This can be enhanced per algorithm later
         console.warn(
           'buildConfig not available for this topic. Implement buildConfig(customInput) in topic meta to enable custom input editing.'
         );
         setConfig({
           ...config,
-          data: { ...config.data, ...customInput },
+          data: mapCustomInputToData(config.renderer, config.data, customInput),
         });
       }
       setShowInputModal(false);
@@ -88,11 +111,15 @@ export default function VisualizerPage() {
     }
   };
 
-  // Use the playback engine to manage steps
   const engine = useAlgoEngine(config?.steps ?? [], {
     defaultSpeedMs: 1200,
     loop: false,
   });
+
+  const [activePanels, setActivePanels] = useState(config?.panels);
+  useEffect(() => {
+    if (config?.panels) setActivePanels(config.panels);
+  }, [config?.panels]);
 
   if (loading) {
     return (
@@ -109,12 +136,9 @@ export default function VisualizerPage() {
     return (
       <div className="min-h-screen bg-slate-900 p-8">
         <div className="max-w-2xl mx-auto">
-          <button
-            onClick={() => navigate(`/subjects/${subjectId}`)}
-            className="text-blue-400 hover:text-blue-300 mb-6 flex items-center gap-2"
-          >
-            ← Back to {subjectId}
-          </button>
+          <Button variant="ghost" onClick={() => navigate(`/subjects/${subjectId}`)} className="mb-6 gap-2 text-blue-400 hover:text-blue-300">
+            <ArrowLeft className="w-4 h-4" /> Back to {subjectId}
+          </Button>
           <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-6 text-red-300">
             <p className="font-semibold mb-2">Unable to load visualization</p>
             <p>{error}</p>
@@ -124,7 +148,7 @@ export default function VisualizerPage() {
     );
   }
 
-  if (!config || !renderer) {
+  if (!config || !renderer || !activePanels) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">
         <p>Configuration not available</p>
@@ -137,122 +161,83 @@ export default function VisualizerPage() {
   return (
     <div className="min-h-screen bg-slate-900 p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          <button
-            onClick={() => navigate(`/subjects/${subjectId}`)}
-            className="text-blue-400 hover:text-blue-300 mb-4 flex items-center gap-2"
-          >
-            ← Back to {subjectId}
-          </button>
+          <Button variant="ghost" onClick={() => navigate(`/subjects/${subjectId}`)} className="mb-4 gap-2 text-blue-400 hover:text-blue-300">
+            <ArrowLeft className="w-4 h-4" /> Back to {subjectId}
+          </Button>
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
               <h1 className="text-4xl font-bold text-white">{config.title}</h1>
-              <button
-                onClick={() => setShowInputModal(true)}
-                className="px-3 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition flex items-center gap-2"
-                title="Edit algorithm input"
-              >
-                ✏️ Edit Input
-              </button>
+              <div className="flex items-center gap-2">
+                <Button variant="secondary" onClick={() => setShowInputModal(true)} className="gap-2">
+                  <Pencil className="w-4 h-4" /> Edit Input
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowExportModal(true)}
+                  className="gap-2 bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600/30"
+                >
+                  <Film className="w-4 h-4" /> Export Video
+                </Button>
+              </div>
             </div>
             {config.subtitle && <p className="text-slate-300 text-lg">{config.subtitle}</p>}
-            <div className="flex gap-2 mt-3">
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
               <span className="px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                 {config.category}
               </span>
               <span className="px-3 py-1 rounded-full text-sm font-medium bg-slate-700/50 text-slate-200">
                 Step {engine.currentStepIndex + 1} / {engine.totalSteps}
               </span>
+              <PanelToggleBar
+                panels={activePanels}
+                onToggle={(key) => setActivePanels((p) => (p ? { ...p, [key]: !p[key] } : p))}
+              />
             </div>
           </div>
         </div>
 
-        {/* Visualizer */}
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 mb-8">
+        <Card className="bg-slate-800/50 border border-slate-700 p-6 mb-8">
           <VisualizerLayout
             config={config}
             step={engine.currentStep}
             renderer={renderer}
             aspectRatio={aspectRatio}
-            activePanels={config.panels}
+            activePanels={activePanels}
             canvasRef={canvasRef}
           />
-        </div>
+        </Card>
 
-        {/* Playback Controls */}
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-          <div className="flex items-center gap-4 justify-center mb-6">
-            <button
-              onClick={() => engine.reset()}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition"
-              title="Reset to beginning"
-            >
-              ⏮ Reset
-            </button>
-            <button
-              onClick={() => engine.goPrev()}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition disabled:opacity-50"
-              disabled={engine.currentStepIndex === 0}
-            >
-              ◀ Prev
-            </button>
-            <button
-              onClick={() => engine.togglePlay()}
-              className={`px-6 py-2 rounded-lg font-semibold transition ${
-                engine.isPlaying
-                  ? 'bg-red-600 hover:bg-red-700 text-white'
-                  : 'bg-green-600 hover:bg-green-700 text-white'
-              }`}
-            >
-              {engine.isPlaying ? '⏸ Pause' : '▶ Play'}
-            </button>
-            <button
-              onClick={() => engine.goNext()}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition disabled:opacity-50"
-              disabled={engine.currentStepIndex === engine.totalSteps - 1}
-            >
-              Next ▶
-            </button>
-            <div className="flex items-center gap-2">
-              <label className="text-slate-300 text-sm">Speed:</label>
-              <select
-                value={engine.speed}
-                onChange={(e) => engine.setSpeed(Number(e.target.value))}
-                className="px-3 py-2 bg-slate-700 text-white rounded border border-slate-600 text-sm"
-              >
-                <option value={500}>0.5x</option>
-                <option value={1000}>1x</option>
-                <option value={1200}>1.2x</option>
-                <option value={1600}>1.6x</option>
-                <option value={2000}>2x</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Step Slider */}
-          <div className="flex items-center gap-4">
-            <span className="text-slate-400 text-sm w-12">{engine.currentStepIndex + 1}</span>
-            <input
-              type="range"
-              min="0"
-              max={engine.totalSteps - 1}
-              value={engine.currentStepIndex}
-              onChange={(e) => engine.goToStep(Number(e.target.value))}
-              className="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-            />
-            <span className="text-slate-400 text-sm w-12 text-right">{engine.totalSteps}</span>
-          </div>
-        </div>
+        <ControlBar
+          currentStep={engine.currentStepIndex}
+          totalSteps={engine.totalSteps}
+          isPlaying={engine.isPlaying}
+          speedMs={engine.speed}
+          onPlay={engine.play}
+          onPause={engine.pause}
+          onNext={engine.goNext}
+          onPrev={engine.goPrev}
+          onReset={engine.reset}
+          onStepSelect={engine.goToStep}
+          onSpeedChange={engine.setSpeed}
+        />
       </div>
 
-      {/* Input Modal */}
       <InputModal
         isOpen={showInputModal}
         renderer={config.renderer}
         initialValue={config.data}
         onSubmit={handleCustomInput}
         onClose={() => setShowInputModal(false)}
+      />
+
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        canvasRef={canvasRef}
+        engine={engine.engine}
+        algoTitle={config.title}
+        aspectRatio={aspectRatio}
       />
     </div>
   );
