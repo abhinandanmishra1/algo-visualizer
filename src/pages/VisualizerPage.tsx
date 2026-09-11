@@ -6,6 +6,7 @@ import { VisualizerLayout } from '../components/VisualizerLayout';
 import { useAlgoEngine } from '../engine/useAlgoEngine';
 import { getRenderer } from '../algorithms/registry';
 import { AlgoRenderer } from '../renderers/types';
+import { InputModal } from '../components/InputModal';
 
 export default function VisualizerPage() {
   const { subjectId, topicId } = useParams<{ subjectId: string; topicId: string }>();
@@ -16,6 +17,8 @@ export default function VisualizerPage() {
   const [renderer, setRenderer] = useState<AlgoRenderer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showInputModal, setShowInputModal] = useState(false);
+  const topicRef = useRef<any>(null);
 
   // Load config on mount or when params change
   useEffect(() => {
@@ -40,6 +43,7 @@ export default function VisualizerPage() {
           return;
         }
 
+        topicRef.current = topic;
         const loadedConfig = await Promise.resolve(topic.loadConfig());
         setConfig(loadedConfig);
         setRenderer(getRenderer(loadedConfig.renderer));
@@ -52,6 +56,37 @@ export default function VisualizerPage() {
 
     loadConfig();
   }, [subjectId, topicId]);
+
+  // Handle custom input submission
+  const handleCustomInput = async (customInput: any) => {
+    if (!config || !topicRef.current) return;
+
+    try {
+      // If topic has buildConfig method, use it; otherwise, create a simple update
+      if (
+        topicRef.current &&
+        typeof (topicRef.current as any).buildConfig === 'function'
+      ) {
+        const newConfig = await Promise.resolve(
+          (topicRef.current as any).buildConfig(customInput)
+        );
+        setConfig(newConfig);
+      } else {
+        // Fallback: update data and assume steps stay the same
+        // This can be enhanced per algorithm later
+        console.warn(
+          'buildConfig not available for this topic. Implement buildConfig(customInput) in topic meta to enable custom input editing.'
+        );
+        setConfig({
+          ...config,
+          data: { ...config.data, ...customInput },
+        });
+      }
+      setShowInputModal(false);
+    } catch (err) {
+      console.error('Failed to update with custom input:', err);
+    }
+  };
 
   // Use the playback engine to manage steps
   const engine = useAlgoEngine(config?.steps ?? [], {
@@ -111,7 +146,16 @@ export default function VisualizerPage() {
             ← Back to {subjectId}
           </button>
           <div>
-            <h1 className="text-4xl font-bold text-white mb-2">{config.title}</h1>
+            <div className="flex items-center justify-between mb-2">
+              <h1 className="text-4xl font-bold text-white">{config.title}</h1>
+              <button
+                onClick={() => setShowInputModal(true)}
+                className="px-3 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium transition flex items-center gap-2"
+                title="Edit algorithm input"
+              >
+                ✏️ Edit Input
+              </button>
+            </div>
             {config.subtitle && <p className="text-slate-300 text-lg">{config.subtitle}</p>}
             <div className="flex gap-2 mt-3">
               <span className="px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
@@ -201,6 +245,15 @@ export default function VisualizerPage() {
           </div>
         </div>
       </div>
+
+      {/* Input Modal */}
+      <InputModal
+        isOpen={showInputModal}
+        renderer={config.renderer}
+        initialValue={config.data}
+        onSubmit={handleCustomInput}
+        onClose={() => setShowInputModal(false)}
+      />
     </div>
   );
 }

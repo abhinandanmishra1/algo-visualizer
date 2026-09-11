@@ -105,7 +105,7 @@ export default function GraphInputEditor({ onSubmit }: GraphInputEditorProps) {
         source: connection.source || '',
         target: connection.target || '',
         animated: true,
-        markerEnd: isDirected ? { type: 'arrowclosed' } : undefined,
+        markerEnd: isDirected ? 'arrowclosed' : undefined,
       };
 
       setEdges((eds) => addEdge(newEdge, eds));
