@@ -1,4 +1,4 @@
-import { AlgoConfig, RendererType } from '../types/algo';
+import { AlgoConfig } from '../types/algo';
 import { floydCycleConfig } from './floyd-cycle';
 import { binarySearchConfig } from './binary-search';
 import { twoPointerConfig } from './two-pointer';
@@ -11,10 +11,8 @@ import { linearSearchConfig } from './linear-search';
 import { slidingWindowConfig } from './sliding-window';
 import { dfsConfig } from './dfs';
 import { bfsConfig } from './bfs';
-import { AlgoRenderer } from '../renderers/types';
-import { LinkedListRenderer } from '../renderers/linkedListRenderer';
-import { ArrayRenderer } from '../renderers/arrayRenderer';
-import { GraphRenderer } from '../renderers/graphRenderer';
+
+export { getRenderer } from '../renderers/registry';
 
 const algorithmRegistry: Record<string, AlgoConfig> = {
   'floyd-cycle': floydCycleConfig,
@@ -31,22 +29,10 @@ const algorithmRegistry: Record<string, AlgoConfig> = {
   bfs: bfsConfig,
 };
 
-const rendererRegistry: Record<RendererType, AlgoRenderer> = {
-  'linked-list': new LinkedListRenderer(),
-  array: new ArrayRenderer(),
-  tree: new ArrayRenderer(), // fallback
-  graph: new GraphRenderer(),
-  'component-diagram': new LinkedListRenderer(), // fallback
-};
-
 export function getAlgorithm(id: string): AlgoConfig | undefined {
   return algorithmRegistry[id];
 }
 
 export function getAllAlgorithms(): AlgoConfig[] {
   return Object.values(algorithmRegistry);
-}
-
-export function getRenderer(type: RendererType): AlgoRenderer {
-  return rendererRegistry[type] || rendererRegistry['linked-list'];
 }

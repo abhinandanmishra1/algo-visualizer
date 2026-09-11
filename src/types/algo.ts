@@ -1,4 +1,4 @@
-export type RendererType = 'linked-list' | 'array' | 'tree' | 'graph' | 'component-diagram';
+export type RendererType = 'array' | 'linked-list' | 'tree' | 'graph' | 'matrix' | 'stack-queue' | 'heap' | 'hash-table' | 'diagram';
 
 export type AspectRatio = '16:9' | '9:16';
 
