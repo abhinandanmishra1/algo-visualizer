@@ -1,0 +1,58 @@
+import { TopicMeta } from './types';
+
+export const networkingTopics: TopicMeta[] = [
+  {
+    id: 'tcp-handshake',
+    title: 'TCP Handshake',
+    subtitle: 'Three-way handshake & connection lifecycle',
+    tags: ['tcp', 'protocol', 'networking'],
+    difficulty: 'beginner',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('TCP Handshake not yet implemented'); },
+  },
+  {
+    id: 'dns-resolution',
+    title: 'DNS Resolution',
+    subtitle: 'Domain name lookup & caching',
+    tags: ['dns', 'protocol', 'caching'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('DNS Resolution not yet implemented'); },
+  },
+  {
+    id: 'http-lifecycle',
+    title: 'HTTP Request Lifecycle',
+    subtitle: 'Methods, headers, status codes',
+    tags: ['http', 'protocol', 'web'],
+    difficulty: 'beginner',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('HTTP Lifecycle not yet implemented'); },
+  },
+  {
+    id: 'osi-model',
+    title: 'OSI Model Layers',
+    subtitle: 'Seven layers of network communication',
+    tags: ['osi', 'layers', 'networking'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('OSI Model not yet implemented'); },
+  },
+  {
+    id: 'tcp-ip-model',
+    title: 'TCP/IP Model',
+    subtitle: 'Internet layer, transport, application',
+    tags: ['tcp-ip', 'protocol', 'networking'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('TCP/IP Model not yet implemented'); },
+  },
+  {
+    id: 'congestion-control',
+    title: 'TCP Congestion Control',
+    subtitle: 'Slow start, congestion avoidance, backoff',
+    tags: ['tcp', 'flow-control', 'optimization'],
+    difficulty: 'advanced',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Congestion Control not yet implemented'); },
+  },
+];

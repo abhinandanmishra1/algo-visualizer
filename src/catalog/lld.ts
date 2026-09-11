@@ -1,0 +1,58 @@
+import { TopicMeta } from './types';
+
+export const lldTopics: TopicMeta[] = [
+  {
+    id: 'rate-limiter',
+    title: 'Rate Limiter',
+    subtitle: 'Token bucket & sliding window algorithms',
+    tags: ['system-design', 'rate-limiting', 'queue'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Rate Limiter not yet implemented'); },
+  },
+  {
+    id: 'lru-cache',
+    title: 'LRU Cache',
+    subtitle: 'Eviction policy with O(1) operations',
+    tags: ['cache', 'linked-list', 'hash-map'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('LRU Cache not yet implemented'); },
+  },
+  {
+    id: 'consistent-hashing',
+    title: 'Consistent Hashing',
+    subtitle: 'Distributed partitioning & rebalancing',
+    tags: ['hashing', 'partitioning', 'distributed'],
+    difficulty: 'advanced',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Consistent Hashing not yet implemented'); },
+  },
+  {
+    id: 'pub-sub-system',
+    title: 'Pub-Sub System',
+    subtitle: 'Message broker & event streaming',
+    tags: ['messaging', 'observer', 'queue'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Pub-Sub System not yet implemented'); },
+  },
+  {
+    id: 'thread-pool',
+    title: 'Thread Pool',
+    subtitle: 'Worker threads & task scheduling',
+    tags: ['concurrency', 'threading', 'queue'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Thread Pool not yet implemented'); },
+  },
+  {
+    id: 'file-system',
+    title: 'File System',
+    subtitle: 'Indexing, B-trees, and journaling',
+    tags: ['data-structures', 'trees', 'persistence'],
+    difficulty: 'advanced',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('File System not yet implemented'); },
+  },
+];

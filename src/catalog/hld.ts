@@ -1,0 +1,58 @@
+import { TopicMeta } from './types';
+
+export const hldTopics: TopicMeta[] = [
+  {
+    id: 'load-balancing',
+    title: 'Load Balancing',
+    subtitle: 'Round-robin, least-connection, weighted strategies',
+    tags: ['architecture', 'scaling', 'distribution'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Load Balancing not yet implemented'); },
+  },
+  {
+    id: 'cap-theorem',
+    title: 'CAP Theorem',
+    subtitle: 'Consistency, availability, partition tolerance',
+    tags: ['distributed-systems', 'trade-offs', 'theory'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('CAP Theorem not yet implemented'); },
+  },
+  {
+    id: 'sharding',
+    title: 'Sharding',
+    subtitle: 'Horizontal partitioning & shard keys',
+    tags: ['database', 'scaling', 'partitioning'],
+    difficulty: 'advanced',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Sharding not yet implemented'); },
+  },
+  {
+    id: 'cdn',
+    title: 'Content Delivery Network (CDN)',
+    subtitle: 'Edge caching & geo-replication',
+    tags: ['caching', 'distribution', 'performance'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('CDN not yet implemented'); },
+  },
+  {
+    id: 'caching-strategies',
+    title: 'Caching Strategies',
+    subtitle: 'Write-through, write-back, TTL policies',
+    tags: ['cache', 'performance', 'memory'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Caching Strategies not yet implemented'); },
+  },
+  {
+    id: 'service-discovery',
+    title: 'Service Discovery',
+    subtitle: 'DNS, load balancer registration',
+    tags: ['microservices', 'networking', 'architecture'],
+    difficulty: 'intermediate',
+    status: 'coming-soon',
+    loadConfig: () => { throw new Error('Service Discovery not yet implemented'); },
+  },
+];
