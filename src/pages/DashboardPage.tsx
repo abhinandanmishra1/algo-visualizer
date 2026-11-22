@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, GitBranch } from 'lucide-react';
+import { BarChart3, GitBranch, Grid3X3 } from 'lucide-react';
 import { catalog, Subject } from '../catalog';
 
 export default function DashboardPage() {
@@ -38,6 +38,20 @@ export default function DashboardPage() {
             </div>
           </div>
           <span className="text-sm font-semibold text-cyan-300">Explore →</span>
+        </button>
+
+        <button
+          onClick={() => navigate('/dp-table')}
+          className="mb-10 flex w-full items-center justify-between gap-4 rounded-xl border border-violet-400/30 bg-gradient-to-r from-violet-500/10 to-indigo-500/10 p-5 text-left transition hover:border-violet-300/60"
+        >
+          <div className="flex items-center gap-4">
+            <div className="rounded-lg bg-violet-400/15 p-3 text-violet-300"><Grid3X3 size={24} /></div>
+            <div>
+              <h2 className="font-semibold text-white">DP Table Visualizer</h2>
+              <p className="mt-1 text-sm text-slate-400">Step through the LCS dynamic programming table cell by cell</p>
+            </div>
+          </div>
+          <span className="text-sm font-semibold text-violet-300">Explore →</span>
         </button>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -6,6 +6,7 @@ import SubjectPage from './pages/SubjectPage';
 import VisualizerPage from './pages/VisualizerPage';
 import ComplexityLabPage from './pages/ComplexityLabPage';
 import RecursionTreePage from './pages/RecursionTreePage';
+import DPTablePage from './pages/DPTablePage';
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,7 @@ export const router = createBrowserRouter([
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'complexity-lab', element: <ComplexityLabPage /> },
       { path: 'recursion-tree', element: <RecursionTreePage /> },
+      { path: 'dp-table', element: <DPTablePage /> },
       { path: 'subjects/:subjectId', element: <SubjectPage /> },
       { path: 'subjects/:subjectId/:topicId', element: <VisualizerPage /> },
     ],
