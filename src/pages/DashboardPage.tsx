@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, GitBranch } from 'lucide-react';
 import { catalog, Subject } from '../catalog';
 
 export default function DashboardPage() {
@@ -21,6 +21,20 @@ export default function DashboardPage() {
             <div>
               <h2 className="font-semibold text-white">Algorithm Complexity Lab</h2>
               <p className="mt-1 text-sm text-slate-400">Compare sorting algorithms, operation counts, and Big-O behavior</p>
+            </div>
+          </div>
+          <span className="text-sm font-semibold text-cyan-300">Explore →</span>
+        </button>
+
+        <button
+          onClick={() => navigate('/recursion-tree')}
+          className="mb-10 flex w-full items-center justify-between gap-4 rounded-xl border border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 p-5 text-left transition hover:border-cyan-300/60"
+        >
+          <div className="flex items-center gap-4">
+            <div className="rounded-lg bg-cyan-400/15 p-3 text-cyan-300"><GitBranch size={24} /></div>
+            <div>
+              <h2 className="font-semibold text-white">Recursion Tree Explorer</h2>
+              <p className="mt-1 text-sm text-slate-400">Explore recursive calls, base cases, and call-stack depth</p>
             </div>
           </div>
           <span className="text-sm font-semibold text-cyan-300">Explore →</span>
