@@ -25,7 +25,7 @@ export const InputModal: React.FC<InputModalProps> = ({
       case 'array':
         return (
           <ArrayInputEditor
-            initialValue={initialValue?.array || []}
+            initialValue={initialValue?.elements ?? initialValue?.array ?? []}
             onSubmit={(arr) => {
               onSubmit({ array: arr });
               onClose();
