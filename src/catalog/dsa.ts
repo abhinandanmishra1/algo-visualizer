@@ -77,8 +77,8 @@ export const dsaTopics: TopicMeta[] = [
     difficulty: 'intermediate',
     status: 'ready',
     loadConfig: () => import('../algorithms/quick-sort').then(m => m.buildQuickSortConfig()),
-    buildConfig: (input: { elements?: number[] }) =>
-      import('../algorithms/quick-sort').then(m => m.buildQuickSortConfig(input.elements)),
+    buildConfig: (input: { array?: number[] }) =>
+      import('../algorithms/quick-sort').then(m => m.buildQuickSortConfig(input.array)),
   },
   {
     id: 'reverse-linked-list',
