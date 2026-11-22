@@ -7,6 +7,7 @@ import { mergeTwoSortedListsConfig } from './merge-two-sorted-lists';
 import { bubbleSortConfig } from './bubble-sort';
 import { selectionSortConfig } from './selection-sort';
 import { insertionSortConfig } from './insertion-sort';
+import { quickSortConfig } from './quick-sort';
 import { linearSearchConfig } from './linear-search';
 import { slidingWindowConfig } from './sliding-window';
 import { dfsConfig } from './dfs';
@@ -23,6 +24,7 @@ const algorithmRegistry: Record<string, AlgoConfig> = {
   'bubble-sort': bubbleSortConfig,
   'selection-sort': selectionSortConfig,
   'insertion-sort': insertionSortConfig,
+  'quick-sort': quickSortConfig,
   'linear-search': linearSearchConfig,
   'sliding-window': slidingWindowConfig,
   dfs: dfsConfig,

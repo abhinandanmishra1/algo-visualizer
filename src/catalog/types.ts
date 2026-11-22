@@ -10,6 +10,7 @@ export interface TopicMeta {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   status: 'ready' | 'coming-soon';
   loadConfig: () => Promise<AlgoConfig> | AlgoConfig;               // lazy-load thunk
+  buildConfig?: (input: { array?: number[] }) => Promise<AlgoConfig> | AlgoConfig;
 }
 
 export interface Subject {
