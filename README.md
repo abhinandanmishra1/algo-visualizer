@@ -1,6 +1,8 @@
-# AlgoVisualizer Platform
+# AlgoVisualizer
 
 A config-driven, canvas-rendered algorithm visualization engine with step-by-step playback, mathematical invariants, dynamic panels, 9:16 vertical reels mode, and in-browser video export via `canvas.captureStream()` and `MediaRecorder`.
+
+The goal is to make algorithms easier to understand by connecting each visual step with the corresponding code, intuition, and mathematical reasoning.
 
 ## Architecture
 
@@ -21,7 +23,7 @@ A config-driven, canvas-rendered algorithm visualization engine with step-by-ste
    - **Illustration Canvas**: Top visual diagram with pointer badges and burn-in captions.
    - **Code Walkthrough**: Monospace code view with active line indicators driven by `step.codeLines`.
    - **Intuition (Why)**: Explains the algorithmic reasoning behind each step.
-   - **Mathematical Invariants**: Live formula evaluation ($a = nC - b$, $\text{mid} = \lfloor \frac{L+R}{2} \rfloor$).
+   - **Mathematical Invariants**: Live formula evaluation ($a = nC - b$, $\\text{mid} = \\lfloor \\frac{L+R}{2} \\rfloor$).
    - **Telemetry / Distance Map**: Live counter chips tracking pointer traversal.
 
 5. **Reels Mode & Video Export**:
