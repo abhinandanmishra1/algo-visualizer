@@ -396,7 +396,7 @@ export function generateQuickSortSteps(input: number[]): AlgoStep[] {
         i++;
         emit(
           `Swap arr[${i}]=${arr[i]} and arr[${j}]=${arr[j]}`,
-          [4, 5],
+          [4, 5, 6],
           {
             state: {
               partitionRange: [low, high],
@@ -412,7 +412,7 @@ export function generateQuickSortSteps(input: number[]): AlgoStep[] {
 
     emit(
       `Swap arr[${i + 1}]=${arr[i + 1]} and arr[${high}]=${arr[high]} (pivot)`,
-      [6],
+      [8],
       {
         state: {
           partitionRange: [low, high],
