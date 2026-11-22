@@ -81,6 +81,17 @@ export const dsaTopics: TopicMeta[] = [
       import('../algorithms/quick-sort').then(m => m.buildQuickSortConfig(input.array)),
   },
   {
+    id: 'merge-sort',
+    title: 'Merge Sort',
+    subtitle: 'Divide the array, sort each half, and merge the results',
+    tags: ['sorting', 'divide-and-conquer', 'stable', 'n-log-n'],
+    difficulty: 'intermediate',
+    status: 'ready',
+    loadConfig: () => import('../algorithms/merge-sort').then(m => m.buildMergeSortConfig()),
+    buildConfig: (input: { array?: number[] }) =>
+      import('../algorithms/merge-sort').then(m => m.buildMergeSortConfig(input.array)),
+  },
+  {
     id: 'reverse-linked-list',
     title: 'Reverse Linked List',
     subtitle: 'Iterative pointer rewiring',
