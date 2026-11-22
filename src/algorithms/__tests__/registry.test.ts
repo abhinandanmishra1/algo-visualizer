@@ -64,6 +64,14 @@ describe('Algorithm Registry', () => {
     expect(algo.data.elements).toEqual([4, 1, 3, 2]);
   });
 
+  it('loads Merge Sort config and supports custom array input', async () => {
+    const { buildMergeSortConfig } = await import('../merge-sort');
+    const algo = buildMergeSortConfig([4, 1, 3, 2]);
+    expect(validateAlgoConfig(algo).valid).toBe(true);
+    expect(algo.steps.at(-1)?.state.array).toEqual([1, 2, 3, 4]);
+    expect(algo.data.elements).toEqual([4, 1, 3, 2]);
+  });
+
   it('loads Insertion Sort config', () => {
     const algo = getAlgorithm('insertion-sort');
     expect(algo).toBeDefined();
@@ -101,7 +109,7 @@ describe('Algorithm Registry', () => {
 
   it('lists all registered algorithms', () => {
     const all = getAllAlgorithms();
-    expect(all.length).toBeGreaterThanOrEqual(13);
+    expect(all.length).toBeGreaterThanOrEqual(14);
     expect(all.map((a) => a.id)).toContain('floyd-cycle');
     expect(all.map((a) => a.id)).toContain('binary-search');
     expect(all.map((a) => a.id)).toContain('two-pointer');
@@ -111,6 +119,7 @@ describe('Algorithm Registry', () => {
     expect(all.map((a) => a.id)).toContain('selection-sort');
     expect(all.map((a) => a.id)).toContain('insertion-sort');
     expect(all.map((a) => a.id)).toContain('quick-sort');
+    expect(all.map((a) => a.id)).toContain('merge-sort');
     expect(all.map((a) => a.id)).toContain('linear-search');
     expect(all.map((a) => a.id)).toContain('sliding-window');
     expect(all.map((a) => a.id)).toContain('dfs');
