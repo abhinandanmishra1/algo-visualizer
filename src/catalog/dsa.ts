@@ -70,6 +70,17 @@ export const dsaTopics: TopicMeta[] = [
     loadConfig: () => import('../algorithms/insertion-sort').then(m => m.insertionSortConfig),
   },
   {
+    id: 'quick-sort',
+    title: 'Quick Sort',
+    subtitle: 'Partition around a pivot and recursively sort each side',
+    tags: ['sorting', 'divide-and-conquer', 'partition', 'n-log-n'],
+    difficulty: 'intermediate',
+    status: 'ready',
+    loadConfig: () => import('../algorithms/quick-sort').then(m => m.buildQuickSortConfig()),
+    buildConfig: (input: { elements?: number[] }) =>
+      import('../algorithms/quick-sort').then(m => m.buildQuickSortConfig(input.elements)),
+  },
+  {
     id: 'reverse-linked-list',
     title: 'Reverse Linked List',
     subtitle: 'Iterative pointer rewiring',
