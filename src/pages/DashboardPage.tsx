@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, GitBranch, Grid3X3 } from 'lucide-react';
+import { BarChart3, GitBranch, Grid3X3, Crown } from 'lucide-react';
 import { catalog, Subject } from '../catalog';
 
 export default function DashboardPage() {
@@ -52,6 +52,20 @@ export default function DashboardPage() {
             </div>
           </div>
           <span className="text-sm font-semibold text-violet-300">Explore →</span>
+        </button>
+
+        <button
+          onClick={() => navigate('/backtracking')}
+          className="mb-10 flex w-full items-center justify-between gap-4 rounded-xl border border-amber-400/30 bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-5 text-left transition hover:border-amber-300/60"
+        >
+          <div className="flex items-center gap-4">
+            <div className="rounded-lg bg-amber-400/15 p-3 text-amber-300"><Crown size={24} /></div>
+            <div>
+              <h2 className="font-semibold text-white">N-Queens Backtracking Explorer</h2>
+              <p className="mt-1 text-sm text-slate-400">Visualize candidate checks, queen placement, conflicts, and backtracking</p>
+            </div>
+          </div>
+          <span className="text-sm font-semibold text-amber-300">Explore →</span>
         </button>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
