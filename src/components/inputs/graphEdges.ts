@@ -5,7 +5,7 @@ import type { Edge } from 'reactflow';
  * Reverse edges created here are tagged so they can be removed later.
  */
 export function makeUndirectedEdges(edges: Edge[]): Edge[] {
-  const undirectedEdges = edges.map((edge) => ({
+  const undirectedEdges: Edge[] = edges.map((edge) => ({
     ...edge,
     markerEnd: undefined,
   }));
