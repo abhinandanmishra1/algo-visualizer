@@ -14,6 +14,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { X, Plus } from 'lucide-react';
+import { makeDirectedEdges, makeUndirectedEdges } from './graphEdges';
 
 export interface GraphInputEditorProps {
   onSubmit: (graph: Record<string | number, (string | number)[]>) => void;
@@ -110,14 +111,15 @@ export default function GraphInputEditor({ onSubmit }: GraphInputEditorProps) {
 
       setEdges((eds) => addEdge(newEdge, eds));
 
-      // For undirected graphs, also add reverse edge
+      // Keep the reverse edge identifiable so switching back to directed
+      // removes only edges generated for undirected mode.
       if (!isDirected && connection.source && connection.target) {
         const reverseEdge: Edge = {
           id: `${connection.target}->${connection.source}`,
           source: connection.target,
           target: connection.source,
           animated: true,
-          markerEnd: undefined,
+          data: { generatedReverse: true },
         };
         setEdges((eds) => addEdge(reverseEdge, eds));
       }
@@ -139,31 +141,17 @@ export default function GraphInputEditor({ onSubmit }: GraphInputEditorProps) {
   );
 
   /**
-   * Toggle between directed and undirected graph
+   * Toggle graph direction while preserving edges the user originally drew.
    */
   const handleToggleDirected = useCallback(() => {
-    setIsDirected(!isDirected);
-    // When switching to undirected, add reverse edges
-    if (!isDirected) {
-      const newEdges: Edge[] = [];
-      edges.forEach((edge) => {
-        newEdges.push(edge);
-        // Check if reverse edge exists
-        const reverseExists = edges.some(
-          (e) => e.source === edge.target && e.target === edge.source
-        );
-        if (!reverseExists) {
-          newEdges.push({
-            id: `${edge.target}->${edge.source}`,
-            source: edge.target,
-            target: edge.source,
-            animated: true,
-          });
-        }
-      });
-      setEdges(newEdges);
-    }
-  }, [isDirected, edges, setEdges]);
+    const nextIsDirected = !isDirected;
+    setIsDirected(nextIsDirected);
+    setEdges((currentEdges) =>
+      nextIsDirected
+        ? makeDirectedEdges(currentEdges)
+        : makeUndirectedEdges(currentEdges)
+    );
+  }, [isDirected, setEdges]);
 
   /**
    * Submit the graph
