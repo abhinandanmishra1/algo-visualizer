@@ -246,7 +246,7 @@ export function generateBFSSteps(
       visited: new Set([start]),
       queue: [start],
       traversalOrder: [],
-      distances,
+      distances: { ...distances },
       action: 'enqueue',
       level: 0,
     },
