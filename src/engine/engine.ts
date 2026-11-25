@@ -58,6 +58,8 @@ export class PlaybackEngine {
   }
 
   public goNext(): boolean {
+    if (this.steps.length === 0) return false;
+
     if (this.currentIndex < this.steps.length - 1) {
       this.currentIndex++;
       this.notify();
@@ -82,6 +84,8 @@ export class PlaybackEngine {
   }
 
   public goToStep(index: number): void {
+    if (this.steps.length === 0) return;
+
     const target = Math.max(0, Math.min(index, this.steps.length - 1));
     if (target !== this.currentIndex) {
       this.currentIndex = target;
@@ -90,7 +94,7 @@ export class PlaybackEngine {
   }
 
   public play(): void {
-    if (this.playing) return;
+    if (this.playing || this.steps.length === 0) return;
     if (this.currentIndex >= this.steps.length - 1) {
       this.currentIndex = 0;
     }
