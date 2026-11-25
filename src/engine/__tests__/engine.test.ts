@@ -48,6 +48,38 @@ describe('PlaybackEngine', () => {
     expect(engine.getCurrentStepIndex()).toBe(0);
   });
 
+  it('keeps empty playback idle even when looping is enabled', () => {
+    const engine = new PlaybackEngine([], { loop: true });
+
+    engine.play();
+    engine.togglePlay();
+    engine.goToStep(5);
+
+    expect(engine.isPlaying()).toBe(false);
+    expect(engine.getCurrentStepIndex()).toBe(0);
+    expect(engine.getCurrentStep()).toBeUndefined();
+    expect(engine.goNext()).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('clears autoplay when the step list becomes empty', () => {
+    const engine = new PlaybackEngine(dummySteps, { loop: true });
+    engine.play();
+    expect(engine.isPlaying()).toBe(true);
+    expect(vi.getTimerCount()).toBe(1);
+
+    engine.setSteps([]);
+
+    expect(engine.isPlaying()).toBe(false);
+    expect(engine.getCurrentStepIndex()).toBe(0);
+    expect(engine.getTotalSteps()).toBe(0);
+    expect(vi.getTimerCount()).toBe(0);
+
+    engine.play();
+    expect(engine.isPlaying()).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   it('supports autoplay with configurable step duration', () => {
     const engine = new PlaybackEngine(dummySteps, { defaultSpeedMs: 1000 });
     const listener = vi.fn();
